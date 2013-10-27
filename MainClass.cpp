@@ -84,6 +84,7 @@ void MainClass::start(void)
 			break;
 		case ALLEGRO_EVENT_MOUSE_AXES:
 			Input::onMouseAxes(evt);
+			break;
 		case ALLEGRO_EVENT_DISPLAY_SWITCH_OUT:
 			Input::onFocusLost();
 			break;
