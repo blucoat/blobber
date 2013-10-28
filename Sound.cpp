@@ -1,10 +1,9 @@
 #include "Sound.h"
-#include <stdio.h>
 #include <allegro5\allegro_audio.h>
 #include <allegro5\allegro_acodec.h>
 
 //Declare sound constants
-Sound *Sound::test;
+ALLEGRO_SAMPLE *Sound::test;
 
 bool Sound::isMusicPlaying = false;
 ALLEGRO_SAMPLE_ID Sound::id;
@@ -18,34 +17,33 @@ void Sound::init()
 	if(!al_reserve_samples(1))
 		throw "Could not reserve samples!";
 
-	test = new Sound("res\\test.wav");
+	test = loadSound("res\\test.wav");
 }
 
-Sound::Sound(const char *ref)
+void Sound::destroy()
 {
-	sample = al_load_sample(ref);
+	al_destroy_sample(test);
+}
+
+ALLEGRO_SAMPLE *Sound::loadSound(const char *ref)
+{
+	ALLEGRO_SAMPLE *sample = al_load_sample(ref);
 	if(!sample) {
-		//im too lazy to append c-strings so we use fprintf
-		fprintf(stderr, "Could not load file: %s\n", ref);
-		exit(-1);
+		throw "Failed to load audio sample!";
 	}
+	return sample;
 }
 
-Sound::~Sound(void)
+void Sound::play(ALLEGRO_SAMPLE *sample)
 {
-	al_destroy_sample(sample);
+	al_play_sample(sample, 1.0f, 0.0f, 1.0f, ALLEGRO_PLAYMODE_ONCE, NULL);
 }
 
-void Sound::play(Sound *sound)
-{
-	al_play_sample(sound->sample, 1.0f, 0.0f, 1.0f, ALLEGRO_PLAYMODE_ONCE, NULL);
-}
-
-void Sound::setMusic(Sound *sound)
+void Sound::setMusic(ALLEGRO_SAMPLE *sample)
 {
 	if(isMusicPlaying)
 		stopMusic();
-	isMusicPlaying = al_play_sample(sound->sample, 1.0f, 0.0f, 1.0f, ALLEGRO_PLAYMODE_LOOP, &id);
+	isMusicPlaying = al_play_sample(sample, 1.0f, 0.0f, 1.0f, ALLEGRO_PLAYMODE_LOOP, &id);
 }
 
 void Sound::stopMusic()

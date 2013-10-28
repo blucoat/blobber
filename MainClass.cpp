@@ -6,6 +6,7 @@
 #include "ExampleScreen.h"
 #include "Input.h"
 #include "Sound.h"
+#include "Bitmap.h"
 
 const int FPS = 60;
 
@@ -34,6 +35,7 @@ MainClass::MainClass(void)
 		throw "Could not create event queue!";
 
 	Sound::init();
+	Bitmap::init();
 
 	al_register_event_source(queue, al_get_display_event_source(display));
 	al_register_event_source(queue, al_get_timer_event_source(timer));
@@ -48,6 +50,9 @@ MainClass::~MainClass(void)
 	al_destroy_event_queue(queue);
 	al_destroy_display(display);
 	al_destroy_timer(timer);
+
+	Bitmap::destroy();
+	Sound::destroy();
 }
 
 //Starts the main game loop

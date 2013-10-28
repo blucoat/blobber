@@ -1,5 +1,5 @@
 #pragma once
-#include "screen.h"
+#include "Screen.h"
 class ExampleScreen : public Screen
 {
 private:

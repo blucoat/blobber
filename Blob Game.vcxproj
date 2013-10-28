@@ -73,12 +73,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Bitmap.cpp" />
     <ClCompile Include="ExampleScreen.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="MainClass.cpp" />
     <ClCompile Include="Sound.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Bitmap.h" />
     <ClInclude Include="ExampleScreen.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="MainClass.h" />

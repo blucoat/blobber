@@ -3,6 +3,7 @@
 #include "ExampleScreen.h"
 #include "Input.h"
 #include "Sound.h"
+#include "Bitmap.h"
 
 ExampleScreen::ExampleScreen(void)
 {
@@ -34,4 +35,5 @@ Screen * ExampleScreen::tick(void)
 void ExampleScreen::render(void)
 {
 	al_clear_to_color(al_map_rgb_f(0, 0.5f * brightness, brightness));
+	Bitmap::draw(Bitmap::spritesheet, 100, 100, 100, 100, 400, 400);
 }
