@@ -34,7 +34,7 @@ MainClass::MainClass(void)
 	if(!queue)
 		throw "Could not create event queue!";
 
-	Sound::init();
+	Sound::init(); // 888888888888888888888888888
 	Bitmap::init();
 
 	al_register_event_source(queue, al_get_display_event_source(display));
