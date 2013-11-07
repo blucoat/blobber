@@ -13,6 +13,7 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
@@ -22,11 +23,17 @@ public class Graphics {
 	
 	private int vaoID, vboID, indexID, pID, vsID, fsID, sizeID, offsetID, transformID;
 	private FloatBuffer transformBuffer = BufferUtils.createFloatBuffer(16);
+	private Matrix4f transform = new Matrix4f();
 	private Texture currentTexture = null;
+	
+	private static final int TARGET_HEIGHT = 1080; 
 	
 	public Graphics() {
 		initShaders();
 		initBuffers();
+		
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 	
 	private void initBuffers() {
@@ -163,14 +170,18 @@ public class Graphics {
 			return;
 		}
 		
+		int sw = Display.getWidth();
+		int sh = Display.getHeight();
+		float scale = (float) sh / TARGET_HEIGHT;
+		
 		glUniform2f(offsetID, 0, 0);
 		glUniform2f(sizeID, (float) w / currentTexture.getImageWidth(), (float) h / currentTexture.getImageHeight());
 		
-		Matrix4f mat = new Matrix4f();
-		Matrix4f.translate(new Vector2f(dx * 2f / 800 - 1, -dy * 2f / 600 + 1), mat, mat);
-		Matrix4f.scale(new Vector3f(w / 800f, h / 600f, 1), mat, mat);
-		Matrix4f.rotate(rot * (float) Math.PI / 180, new Vector3f(0, 0, 1), mat, mat);
-		mat.store(transformBuffer);
+		Matrix4f.setIdentity(transform);
+		Matrix4f.translate(new Vector2f(dx * 2.0f * sh / sw - 1, dy * -2.0f + 1), transform, transform);
+		Matrix4f.scale(new Vector3f(w * scale / sw, h * scale / sh, 1), transform, transform);
+		Matrix4f.rotate(rot * (float) Math.PI / 180, new Vector3f(0, 0, 1), transform, transform);
+		transform.store(transformBuffer);
 		transformBuffer.flip();
 		glUniformMatrix4(transformID, true, transformBuffer);
 		

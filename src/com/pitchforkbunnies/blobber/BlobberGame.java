@@ -5,7 +5,6 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
-import org.newdawn.slick.opengl.Texture;
 
 public class BlobberGame {
 
@@ -13,24 +12,27 @@ public class BlobberGame {
 		initDisplay();
 		TextureBundle bundle = new TextureBundle();
 		Graphics g = new Graphics();
-		Texture tex = bundle.test;
-		int rot = 0, x = 400, y = 300;
+		float x = 2.0f/3, y = 0.5f;
+		
+		Sprite sprite = new Sprite(bundle.test, 0, 0, 
+				bundle.test.getImageWidth(), bundle.test.getImageHeight());
+		
 		while(!Display.isCloseRequested()) {
+			if(Display.wasResized())
+				GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
+			
 			GL11.glClearColor(1, 1, 1, 1);
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 			g.begin();
-			g.bindTexture(tex);
-			g.draw(x, y, 0, 0, tex.getImageWidth(), tex.getImageWidth(), rot);
+			sprite.drawAt(g, x, y);
 			g.end();
 			
-			rot += 1;
-			if(Keyboard.isKeyDown(Keyboard.KEY_W)) y -= 5;
-			if(Keyboard.isKeyDown(Keyboard.KEY_A)) x -= 5;
-			if(Keyboard.isKeyDown(Keyboard.KEY_S)) y += 5;
-			if(Keyboard.isKeyDown(Keyboard.KEY_D)) x += 5;
+			if(Keyboard.isKeyDown(Keyboard.KEY_W)) y -= .01;
+			if(Keyboard.isKeyDown(Keyboard.KEY_A)) x -= .01;
+			if(Keyboard.isKeyDown(Keyboard.KEY_S)) y += .01;
+			if(Keyboard.isKeyDown(Keyboard.KEY_D)) x += .01;
 			
-			Display.update();
-			Display.sync(60);
+			Display.update();	//will hang until vsync
 		}
 		g.release();
 		g = null;
@@ -41,6 +43,8 @@ public class BlobberGame {
 	private void initDisplay() {
 		try {
 			Display.setDisplayMode(new DisplayMode(800, 600));
+			Display.setVSyncEnabled(true);
+			Display.setResizable(true);
 			Display.setTitle("Blobber 3: Revelations");
 			Display.create();
 		} catch (LWJGLException e) {			
