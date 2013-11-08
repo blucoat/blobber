@@ -26,7 +26,16 @@ public class Graphics {
 	private Matrix4f transform = new Matrix4f();
 	private Texture currentTexture = null;
 	
-	private static final int TARGET_HEIGHT = 100; 
+	private static final int TARGET_HEIGHT = 300; 
+	
+	/**
+	 * Converts from pixels to screen units
+	 * @param pixels length in pixels
+	 * @return the length relative to the screen height
+	 */
+	public static float pixelsToUnits(int pixels) {
+		return (float) pixels / TARGET_HEIGHT;
+	}
 	
 	public Graphics() {
 		initShaders();
@@ -172,9 +181,6 @@ public class Graphics {
 		
 		int tw = currentTexture.getImageWidth();
 		int th = currentTexture.getImageHeight();
-		
-		System.out.println("tex size: " + tw);
-		System.out.println("other size: " + currentTexture.getTextureWidth());
 		
 		glUniform2f(offsetID, (float) sx / tw, (float) sy / th);
 		glUniform2f(sizeID, (float) w / tw, (float) h / th);

@@ -8,7 +8,7 @@ import org.lwjgl.opengl.GL11;
 
 public class BlobberGame {
 	
-	private static final boolean VSYNC_IN_WINDOWED = false;	//stops screen tearing when aero is disabled, causes stuttering when it is
+	private static final boolean VSYNC_IN_WINDOWED = true;	//stops screen tearing when aero is disabled, causes stuttering when it is
 	
 	private Screen currentScreen;
 	private Graphics graphics;
@@ -35,7 +35,7 @@ public class BlobberGame {
 		
 		graphics = new Graphics();
 		bundle = new ResourceBundle();
-		currentScreen = new TestScreen(bundle);
+		currentScreen = new GameScreen(new LevelTest(bundle), bundle);
 	}
 	
 	private void gameLoop() {
@@ -66,7 +66,6 @@ public class BlobberGame {
 			graphics.end();
 			
 			frames++;
-			
 			Display.update();
 			Display.sync(60);
 		}

@@ -19,10 +19,11 @@ import org.newdawn.slick.opengl.TextureLoader;
  */
 public class TextureBundle {
 
+	private List<Texture> textures = new ArrayList<Texture>();
+	
 	public Texture test = loadTexture("test.png");
 	public Texture numbers = loadTexture("numbers.png");
-	
-	private List<Texture> textures = new ArrayList<Texture>();
+	public Texture sprites = loadTexture("sprites.png");
 	
 	private Texture loadTexture(String ref) {
 		InputStream in = TextureBundle.class.getClassLoader().getResourceAsStream("com/pitchforkbunnies/blobber/res/" + ref);
@@ -46,7 +47,9 @@ public class TextureBundle {
 		
 		//Set mipmapping to use linear filtering, set this to nearest if we want pixel-style gramphics
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+		
+		textures.add(tex);
 		
 		return tex;
 	}

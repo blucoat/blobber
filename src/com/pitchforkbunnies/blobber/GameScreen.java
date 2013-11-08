@@ -4,7 +4,7 @@ public class GameScreen extends Screen {
 
 	private Level level;
 	
-	public GameScreen(ResourceBundle bundle, Level level) {
+	public GameScreen(Level level, ResourceBundle bundle) {
 		super(bundle);
 		this.level = level;
 	}

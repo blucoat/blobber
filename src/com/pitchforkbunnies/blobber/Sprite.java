@@ -6,6 +6,7 @@ public class Sprite {
 	private Texture tex;
 	private int sx, sy, w, h, frames, period;
 	private int t = 0, f = 0;
+	private boolean playing = true;
 	
 	/**
 	 * Constructs a new sprite with the given dimensions 
@@ -31,10 +32,12 @@ public class Sprite {
 	 * Steps the animation cycle one tick forward
 	 */
 	public void tick() {
-		if(++t == period) {
-			t = 0;
-			if(++f == frames)
-				f = 0;
+		if(playing) {
+			if(++t == period) {
+				t = 0;
+				if(++f == frames)
+					f = 0;
+			}
 		}
 	}
 	
@@ -47,7 +50,6 @@ public class Sprite {
 	public void drawAt(Graphics g, float x, float y) {
 		g.bindTexture(tex);
 		int spritesNotOnRow = f - (tex.getImageWidth() - sx) / w + 1;
-		System.out.println(f + ", " + spritesNotOnRow);
 		if(spritesNotOnRow <= 0) {
 			g.draw(x, y, sx + w * f, sy, w, h, 0);
 		} else {
@@ -61,7 +63,7 @@ public class Sprite {
 	 * @return The width of the sprite
 	 */
 	public float getWidth() {
-		return w;
+		return Graphics.pixelsToUnits(w);
 	}
 	
 	/**
@@ -69,7 +71,26 @@ public class Sprite {
 	 * @return The height of the sprite
 	 */
 	public float getHeight() {
-		return h;
+		return Graphics.pixelsToUnits(h);
+	}
+	
+	/**
+	 * Sets the state of the animation
+	 * @param b Whether the animation should play or not
+	 */
+	public void setPlaying(boolean b) {
+		playing = b;
+	}
+	
+	/**
+	 * Jumps to the specified frame
+	 * @param f The frame to jump to
+	 */
+	public void gotoFrame(int f) {
+		if(f < frames && f >= 0) {
+			this.f = f;
+			t = 0;
+		}
 	}
 	
 }
