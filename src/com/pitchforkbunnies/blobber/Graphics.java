@@ -26,7 +26,7 @@ public class Graphics {
 	private Matrix4f transform = new Matrix4f();
 	private Texture currentTexture = null;
 	
-	private static final int TARGET_HEIGHT = 1080; 
+	private static final int TARGET_HEIGHT = 100; 
 	
 	public Graphics() {
 		initShaders();
@@ -170,12 +170,19 @@ public class Graphics {
 			return;
 		}
 		
+		int tw = currentTexture.getImageWidth();
+		int th = currentTexture.getImageHeight();
+		
+		System.out.println("tex size: " + tw);
+		System.out.println("other size: " + currentTexture.getTextureWidth());
+		
+		glUniform2f(offsetID, (float) sx / tw, (float) sy / th);
+		glUniform2f(sizeID, (float) w / tw, (float) h / th);
+		
 		int sw = Display.getWidth();
 		int sh = Display.getHeight();
 		float scale = (float) sh / TARGET_HEIGHT;
 		
-		glUniform2f(offsetID, 0, 0);
-		glUniform2f(sizeID, (float) w / currentTexture.getImageWidth(), (float) h / currentTexture.getImageHeight());
 		
 		Matrix4f.setIdentity(transform);
 		Matrix4f.translate(new Vector2f(dx * 2.0f * sh / sw - 1, dy * -2.0f + 1), transform, transform);
@@ -186,6 +193,29 @@ public class Graphics {
 		glUniformMatrix4(transformID, true, transformBuffer);
 		
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
+	}
+	
+	/**
+	 * Clears the screen to the default background color.
+	 */
+	public void clear() {
+		glClear(GL_COLOR_BUFFER_BIT);
+	}
+	
+	/**
+	 * Gets the height of the screen, in screen heights (always 1)
+	 * @return the height of the screen
+	 */
+	public float getHeight() {
+		return 1;
+	}
+	
+	/**
+	 * Gets the width of the screen, in screen heights (the aspect ratio)
+	 * @return the width of the screen
+	 */
+	public float getWidth() {
+		return (float) Display.getWidth() / Display.getHeight();
 	}
 	
 	public void release() {

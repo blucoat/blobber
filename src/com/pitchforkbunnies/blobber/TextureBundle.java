@@ -9,7 +9,6 @@ import java.util.List;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
-import org.lwjgl.util.glu.MipMap;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 
@@ -21,6 +20,7 @@ import org.newdawn.slick.opengl.TextureLoader;
 public class TextureBundle {
 
 	public Texture test = loadTexture("test.png");
+	public Texture numbers = loadTexture("numbers.png");
 	
 	private List<Texture> textures = new ArrayList<Texture>();
 	
@@ -44,6 +44,7 @@ public class TextureBundle {
 		
 		GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
 		
+		//Set mipmapping to use linear filtering, set this to nearest if we want pixel-style gramphics
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
 		
