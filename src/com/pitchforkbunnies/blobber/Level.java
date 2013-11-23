@@ -8,8 +8,6 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import org.lwjgl.input.Keyboard;
-
 public abstract class Level {
 	public ResourceBundle bundle;
 	public int width, height;
@@ -19,7 +17,7 @@ public abstract class Level {
 	public EntityPlayer player;
 	
 	//upper-left corner of the viewport in tile space
-	private float xo = 0, yo = 0;
+	public float xo = 0, yo = 0;
 	
 	/**
 	 * Loads a level from the given image file
@@ -80,29 +78,23 @@ public abstract class Level {
 	 * @param g The graphics handle to use
 	 */
 	public void render(Graphics g) {
-		xo = player.x - 0.5f * g.getWidth() / Tile.TILE_WIDTH_H;
-		yo = player.y - 0.5f * g.getHeight() / Tile.TILE_WIDTH_H;
-		if(xo < 0) xo = 0;
-		if(yo < 0) yo = 0;
-		if(xo > width - g.getWidth() / Tile.TILE_WIDTH_H) 
-			xo = width - g.getWidth() / Tile.TILE_WIDTH_H;
-		if(yo > height - g.getHeight() / Tile.TILE_WIDTH_H) 
-			yo = height - g.getHeight() / Tile.TILE_WIDTH_H;
-		
-		int right = (int) Math.min(width - 1, xo + g.getWidth() / Tile.TILE_WIDTH_H);
-		int left = (int) Math.min(height - 1, yo + g.getHeight() / Tile.TILE_WIDTH_H);
+		int right = (int) Math.min(width - 1, xo + Graphics.getWidth() / Tile.TILE_WIDTH_H);
+		int left = (int) Math.min(height - 1, yo + Graphics.getHeight() / Tile.TILE_WIDTH_H);
 		
 		for(int i = (int) xo; i <= right; i++) {
 			for(int j = (int) yo; j <= left; j++) {
-				tiles[i][j].render(g, (i - xo) * Tile.TILE_WIDTH_H, (j - yo) * Tile.TILE_WIDTH_H);
+				if(i >= 0 && j >= 0)
+					tiles[i][j].render(g, (i - xo) * Tile.TILE_WIDTH_H, (j - yo) * Tile.TILE_WIDTH_H);
 			}
 		}
 		
 		for(Entity e : entities) {
 			float xx = (e.x - xo) * Tile.TILE_WIDTH_H;
 			float yy = (e.y - yo) * Tile.TILE_WIDTH_H;
-			if(xx > 0 && yy > 0 && xx + e.width * Tile.TILE_WIDTH_H < g.getWidth()
-					&& yy + e.height * Tile.TILE_WIDTH_H < g.getHeight()) {
+			float w = e.width * Tile.TILE_WIDTH_H;
+			float h = e.height * Tile.TILE_WIDTH_H;
+			
+			if(xx + w > 0 && yy + h > 0 && xx < Graphics.getWidth() && yy < Graphics.getHeight()) {
 				e.render(g, xx, yy);
 			}
 		}
@@ -114,11 +106,25 @@ public abstract class Level {
 	 * @return <code>true</code> if the entity collides, <code>false</code> otherwise
 	 */
 	public boolean collides(Entity e, float x, float y) {
-		//TODO: Make the game not crash here if you leave the level.
+		if(x < 0 || y < 0 || x + e.width >= width || y + e.height >= height)
+			return true;
+		
 		if(tiles[(int) x][(int) y].collides(e)) return true;
 		if(tiles[(int) (x + e.width)][(int) y].collides(e)) return true;
 		if(tiles[(int) x][(int) (y + e.height)].collides(e)) return true;
 		if(tiles[(int) (x + e.width)][(int) (y + e.height)].collides(e)) return true;
+		
 		return false;
+	}
+
+	public void fixCamera(Graphics g) {
+		xo = player.x - 0.5f * Graphics.getWidth() / Tile.TILE_WIDTH_H;
+		yo = player.y - 0.5f * Graphics.getHeight() / Tile.TILE_WIDTH_H;
+		if(xo < 0) xo = 0;
+		if(yo < 0) yo = 0;
+		if(xo > width - Graphics.getWidth() / Tile.TILE_WIDTH_H) 
+			xo = width - Graphics.getWidth() / Tile.TILE_WIDTH_H;
+		if(yo > height - Graphics.getHeight() / Tile.TILE_WIDTH_H) 
+			yo = height - Graphics.getHeight() / Tile.TILE_WIDTH_H;
 	}
 }

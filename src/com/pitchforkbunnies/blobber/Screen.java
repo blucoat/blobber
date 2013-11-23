@@ -18,4 +18,8 @@ public abstract class Screen {
 	 * @param g The graphics handle to use for drawing
 	 */
 	public abstract void render(Graphics g);
+
+	public void renderLight(Graphics g) {
+		g.setLightmap(null);
+	}
 }

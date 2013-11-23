@@ -6,6 +6,9 @@ public class Entity {
 	public Sprite sprite;
 	public boolean isDead = false;
 	public boolean onGround = false;
+	public boolean onLeftWall = false;
+	public boolean onRightWall = false;
+	public boolean canWallJump = false;
 	
 	public Entity(Level level) {
 		this.level = level;
@@ -27,12 +30,21 @@ public class Entity {
 	public void tick() {
 		sprite.tick();
 		
+		onLeftWall = false;
+		onRightWall = false;
+		
 		int xsteps = (int) Math.abs(dx * 100);
 		float xx = dx / xsteps;
 		for(int i = 0; i < xsteps; i++) {
 			if(!level.collides(this, x + xx, y)) {
 				x += xx;
 			} else {
+				if(dy > 0) {
+					if(dx > 0)
+						onRightWall = true;
+					else
+						onLeftWall = true;
+				}
 				dx = 0;
 				break;
 			}
@@ -54,5 +66,7 @@ public class Entity {
 		}
 		
 		dx *= 0.25f;
+		if((onLeftWall || onRightWall) && canWallJump)
+			dy *= 0.25;
 	}
 }

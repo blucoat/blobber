@@ -5,10 +5,11 @@ import org.lwjgl.Sys;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.glu.GLU;
 
 public class BlobberGame {
 	
-	private static final boolean VSYNC_IN_WINDOWED = true;	//stops screen tearing when aero is disabled, causes stuttering when it is
+	private static final boolean VSYNC_IN_WINDOWED = false;	//stops screen tearing when aero is disabled, causes stuttering when it is
 	
 	private Screen currentScreen;
 	private Graphics graphics;
@@ -25,6 +26,7 @@ public class BlobberGame {
 			Display.setDisplayMode(new DisplayMode(800, 600));
 			Display.setVSyncEnabled(VSYNC_IN_WINDOWED);
 			Display.setTitle("Blobber 3: Revelations");
+			Display.setResizable(true);
 			Display.create();
 			
 			GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
@@ -36,6 +38,7 @@ public class BlobberGame {
 		graphics = new Graphics();
 		bundle = new ResourceBundle();
 		currentScreen = new GameScreen(new LevelTest(bundle), bundle);
+		//currentScreen = new TestScreen(bundle);
 	}
 	
 	private void gameLoop() {
@@ -45,6 +48,9 @@ public class BlobberGame {
 		int ticks = 0, frames = 0;
 		
 		while(!Display.isCloseRequested()) {
+			if(Display.wasResized())
+				GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
+			
 			double now = (double) Sys.getTime() / Sys.getTimerResolution();
 			secondsToDo += now - lastTime;
 			lastTime = now;
@@ -61,6 +67,7 @@ public class BlobberGame {
 			}
 			
 			graphics.clear();
+			currentScreen.renderLight(graphics);
 			graphics.begin();
 			currentScreen.render(graphics);
 			graphics.end();
@@ -68,6 +75,10 @@ public class BlobberGame {
 			frames++;
 			Display.update();
 			Display.sync(60);
+			
+			int error = GL11.glGetError();
+			if(error != GL11.GL_NO_ERROR)
+				System.out.println(GLU.gluErrorString(error));
 		}
 	}
 	
@@ -81,5 +92,4 @@ public class BlobberGame {
 		BlobberGame game = new BlobberGame();
 		game.start();
 	}
-
 }

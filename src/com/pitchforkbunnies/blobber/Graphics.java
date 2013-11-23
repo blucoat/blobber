@@ -1,6 +1,7 @@
 package com.pitchforkbunnies.blobber;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL13.*;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
@@ -13,15 +14,19 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.ARBShaderObjects;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.newdawn.slick.opengl.Texture;
 
+
 public class Graphics {
 	
-	private int vaoID, vboID, indexID, pID, vsID, fsID, sizeID, offsetID, transformID;
+	private boolean lightingEnabled = false;
+	
+	private int vaoID, vboID, indexID, p1ID, p2ID, vsID, fs1ID, fs2ID, sizeID, offsetID, transformID, textureID, lightmapID;
 	private FloatBuffer transformBuffer = BufferUtils.createFloatBuffer(16);
 	private Matrix4f transform = new Matrix4f();
 	private Texture currentTexture = null;
@@ -42,7 +47,16 @@ public class Graphics {
 		initBuffers();
 		
 		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+	
+	public void setLightmap(LightMap map) {
+		if(map == null) {
+			lightingEnabled = false;
+		} else { 
+			lightingEnabled = true;
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, map.getFrameBuffer());
+		}
 	}
 	
 	private void initBuffers() {
@@ -96,23 +110,44 @@ public class Graphics {
 	}
 	
 	private void initShaders() {
-		pID = glCreateProgram();
-		glAttachShader(pID, loadShader("vertex.glsl", GL_VERTEX_SHADER));
-		glAttachShader(pID, loadShader("fragment.glsl", GL_FRAGMENT_SHADER));
+		vsID = loadShader("vertex.glsl", GL_VERTEX_SHADER);
+		fs1ID = loadShader("fragment1.glsl", GL_FRAGMENT_SHADER);
+		fs2ID = loadShader("fragment2.glsl", GL_FRAGMENT_SHADER);
 		
-		glBindAttribLocation(pID, 0, "in_Position");
-		glBindAttribLocation(pID, 1, "in_ST");
+		p1ID = glCreateProgram();
+		glAttachShader(p1ID, vsID);
+		glAttachShader(p1ID, fs1ID);
 		
-		glLinkProgram(pID);
-		glValidateProgram(pID);
+		p2ID = glCreateProgram();
+		glAttachShader(p2ID, vsID);
+		glAttachShader(p2ID, fs2ID);
 		
-		transformID = glGetUniformLocation(pID, "transform");
-		offsetID = glGetUniformLocation(pID, "offset");
-		sizeID = glGetUniformLocation(pID, "size");
+		glBindAttribLocation(p2ID, 0, "in_Position");
+		glBindAttribLocation(p2ID, 1, "in_ST");
+		
+		glLinkProgram(p1ID);
+		glValidateProgram(p1ID);
+		
+		transformID = glGetUniformLocation(p1ID, "transform");
+		offsetID = glGetUniformLocation(p1ID, "offset");
+		sizeID = glGetUniformLocation(p1ID, "size");
+		
+		glLinkProgram(p2ID);
+		glValidateProgram(p2ID);
+		
+		transformID = glGetUniformLocation(p2ID, "transform");
+		offsetID = glGetUniformLocation(p2ID, "offset");
+		sizeID = glGetUniformLocation(p2ID, "size");
+		
+		ARBShaderObjects.glUseProgramObjectARB(p1ID);
+		textureID = ARBShaderObjects.glGetUniformLocationARB(p1ID, "texture_diffuse");
+		ARBShaderObjects.glUniform1iARB(textureID, 0);
+		lightmapID = ARBShaderObjects.glGetUniformLocationARB(p1ID, "lightmap");
+		ARBShaderObjects.glUniform1iARB(lightmapID, 1);
 	}
 	
-	private int loadShader(String ref, int type) {
-		InputStream in = getClass().getClassLoader().getResourceAsStream("com/pitchforkbunnies/blobber/shaders/" + ref);
+	public static int loadShader(String ref, int type) {
+		InputStream in = Graphics.class.getClassLoader().getResourceAsStream("com/pitchforkbunnies/blobber/shaders/" + ref);
 		if(in == null)
 			throw new RuntimeException("Could not load file: " + ref);
 		
@@ -134,13 +169,15 @@ public class Graphics {
 	}
 	
 	public void begin() {
-		glUseProgram(pID);
+		glUseProgram(lightingEnabled ? p1ID : p2ID);
 		
 		glBindVertexArray(vaoID);
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
 		
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexID);
+		
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 	
 	public void end() {
@@ -158,6 +195,7 @@ public class Graphics {
 	
 	public void bindTexture(Texture tex) {
 		if(currentTexture != tex) {
+			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, tex.getTextureID());
 			currentTexture = tex;
 		}
@@ -212,7 +250,7 @@ public class Graphics {
 	 * Gets the height of the screen, in screen heights (always 1)
 	 * @return the height of the screen
 	 */
-	public float getHeight() {
+	public static float getHeight() {
 		return 1;
 	}
 	
@@ -220,14 +258,23 @@ public class Graphics {
 	 * Gets the width of the screen, in screen heights (the aspect ratio)
 	 * @return the width of the screen
 	 */
-	public float getWidth() {
+	public static float getWidth() {
 		return (float) Display.getWidth() / Display.getHeight();
 	}
 	
 	public void release() {
-		glDeleteProgram(pID);
+		glUseProgram(0);
+		
+		glDetachShader(p1ID, vsID);
+		glDetachShader(p1ID, fs1ID);
+		
+		glDetachShader(p2ID, vsID);
+		glDetachShader(p2ID, fs2ID);
+		
+		glDeleteProgram(p1ID);
 		glDeleteShader(vsID);
-		glDeleteShader(fsID);
+		glDeleteShader(fs1ID);
+		glDeleteShader(fs2ID);
 		
 		glDeleteBuffers(vboID);
 		glDeleteBuffers(indexID);

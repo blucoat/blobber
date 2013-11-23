@@ -2,6 +2,7 @@ package com.pitchforkbunnies.blobber;
 
 public class TestScreen extends Screen {
 	
+	private int t = 0;
 	private Sprite sprite;
 	
 	public TestScreen(ResourceBundle bundle) {
@@ -12,6 +13,7 @@ public class TestScreen extends Screen {
 	@Override
 	public Screen tick() {
 		sprite.tick();
+		//return (t++ == 120) ? new GameScreen(new LevelTest(bundle), bundle) : null;
 		return null;
 	}
 
