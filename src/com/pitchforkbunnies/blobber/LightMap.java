@@ -227,6 +227,7 @@ public class LightMap {
 			}
 		}
 		
+		List<Float> points = new ArrayList<Float>();
 		List<Segment> open = new ArrayList<Segment>();
 		Segment lastSegment = null, currentSegment = null;
 		float lastX = 0, lastY = 0;
@@ -256,34 +257,38 @@ public class LightMap {
 				else
 					System.out.println("this should not happen");
 				
-				float xx, yy, t, ix, iy;
-				if(i != 0) {
-					//find intersection with last segment
-					xx = lastSegment.end.x - lastSegment.start.x;
-					yy = lastSegment.end.y - lastSegment.start.y;
-					t = (xx * (lastSegment.start.y - y) - yy * (lastSegment.start.x - x)) /
-							(xx * (v.y - y) - yy * (v.x - x));
-					ix = x + (v.x - x) * t;
-					iy = y + (v.y - y) * t;
+				if(currentSegment != lastSegment || currentSegment == null) {
+					float xx, yy, t, ix, iy;
+					if(i != 0) {
+						//find intersection with last segment
+						xx = lastSegment.end.x - lastSegment.start.x;
+						yy = lastSegment.end.y - lastSegment.start.y;
+						t = (xx * (lastSegment.start.y - y) - yy * (lastSegment.start.x - x)) /
+								(xx * (v.y - y) - yy * (v.x - x));
+						ix = x + (v.x - x) * t;
+						iy = y + (v.y - y) * t;
 					
-					drawTriangle(x, y, ix, iy, lastX, lastY, r, g, b, intensity);
-				}
+						//drawTriangle(x, y, ix, iy, lastX, lastY, r, g, b, intensity);
+						points.add(Float.valueOf(ix));
+						points.add(Float.valueOf(iy));
+						points.add(Float.valueOf(lastX));
+						points.add(Float.valueOf(lastY));
+					}
 				
-				if(currentSegment != null) {
-					//find intersection with current segment, store it to lastX, lastY
-					//we can re-use variables because i'm lazy
-					xx = currentSegment.end.x - currentSegment.start.x;
-					yy = currentSegment.end.y - currentSegment.start.y;
-					t = (xx * (currentSegment.start.y - y) - yy * (currentSegment.start.x - x)) /
-							(xx * (v.y - y) - yy * (v.x - x));
-					lastX = x + (v.x - x) * t;
-					lastY = y + (v.y - y) * t;
+					if(currentSegment != null) {
+						//find intersection with current segment, store it to lastX, lastY
+						//we can re-use variables because i'm lazy
+						xx = currentSegment.end.x - currentSegment.start.x;
+						yy = currentSegment.end.y - currentSegment.start.y;
+						t = (xx * (currentSegment.start.y - y) - yy * (currentSegment.start.x - x)) /
+								(xx * (v.y - y) - yy * (v.x - x));
+						lastX = x + (v.x - x) * t;
+						lastY = y + (v.y - y) * t;
+					}
 				}
 			}	
 		}
-	}
-	
-	public void drawTriangle(float x1, float y1, float x2, float y2, float x3, float y3, float r, float g, float b, float intensity) {
+		
 		glUseProgram(pID);
 		glBindVertexArray(vaoID);
 		glEnableVertexAttribArray(0);
@@ -292,29 +297,36 @@ public class LightMap {
 		glUniform4f(colorID, r, g, b, intensity);
 		glUniform3f(attenuationID, 1, 0, .5f);
 		
-		float sx1 = (x1 - level.xo) * Tile.TILE_WIDTH_H / Graphics.getWidth() * 2 - 1;
-		float sy1 = (y1 - level.yo) * Tile.TILE_WIDTH_H / Graphics.getHeight() * -2 + 1;
-		float sx2 = (x2 - level.xo) * Tile.TILE_WIDTH_H / Graphics.getWidth() * 2 - 1;
-		float sy2 = (y2 - level.yo) * Tile.TILE_WIDTH_H / Graphics.getHeight() * -2 + 1;
-		float sx3 = (x3 - level.xo) * Tile.TILE_WIDTH_H / Graphics.getWidth() * 2 - 1;
-		float sy3 = (y3 - level.yo) * Tile.TILE_WIDTH_H / Graphics.getHeight() * -2 + 1;
-		
-		float[] values = {
-				sx1, sy1, 0, 1, 0, 0,
-				sx2, sy2, 0, 1, x2 - x1, y2 - y1,
-				sx3, sy3, 0, 1, x3 - x1, y3 - y1
-		};
-		
-		buffer.clear();
-		buffer.put(values);
-		buffer.flip();
-		
-		glBindBuffer(GL_ARRAY_BUFFER, vboID);
-		glBufferSubData(GL_ARRAY_BUFFER, 0, buffer);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		
-		glBindVertexArray(vaoID);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		for(int i = 0; i < points.size(); i += 4) {
+			float x2 = points.get(i).floatValue();
+			float y2 = points.get(i + 1).floatValue();
+			float x3 = points.get(i + 2).floatValue();
+			float y3 = points.get(i + 3).floatValue();
+			
+			float sx1 = (x - level.xo) * Tile.TILE_WIDTH_H / Graphics.getWidth() * 2 - 1;
+			float sy1 = (y - level.yo) * Tile.TILE_WIDTH_H / Graphics.getHeight() * -2 + 1;
+			float sx2 = (x2 - level.xo) * Tile.TILE_WIDTH_H / Graphics.getWidth() * 2 - 1;
+			float sy2 = (y2 - level.yo) * Tile.TILE_WIDTH_H / Graphics.getHeight() * -2 + 1;
+			float sx3 = (x3 - level.xo) * Tile.TILE_WIDTH_H / Graphics.getWidth() * 2 - 1;
+			float sy3 = (y3 - level.yo) * Tile.TILE_WIDTH_H / Graphics.getHeight() * -2 + 1;
+			
+			float[] values = {
+					sx1, sy1, 0, 1, 0, 0,
+					sx2, sy2, 0, 1, x2 - x, y2 - y,
+					sx3, sy3, 0, 1, x3 - x, y3 - y
+			};
+			
+			buffer.clear();
+			buffer.put(values);
+			buffer.flip();
+			
+			glBindBuffer(GL_ARRAY_BUFFER, vboID);
+			glBufferSubData(GL_ARRAY_BUFFER, 0, buffer);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			
+			glBindVertexArray(vaoID);
+			glDrawArrays(GL_TRIANGLES, 0, 3);
+		}
 		
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
@@ -331,31 +343,46 @@ public class LightMap {
 		glEnableVertexAttribArray(2);
 		glEnableVertexAttribArray(3);
 		
-		float nx = y3 - y2;
-		float ny = x2 - x3;
-		float length = (float) Math.sqrt(nx * nx + ny * ny);
-		nx /= length;
-		ny /= length;
-		
-		float snx = nx * Tile.TILE_WIDTH_H * 2 / Graphics.getWidth();
-		float sny = ny * Tile.TILE_WIDTH_H * -2 / Graphics.getHeight();
-		
-		float[] quad = {
-				sx2, sy2, 0, 1, x2 - x1, y2 - y1, nx, ny, 1,
-				sx3, sy3, 0, 1, x3 - x1, y3 - y1, nx, ny, 1,
-				sx2 - snx, sy2 - sny, 0, 1, x2 - x1, y2 - y1, nx, ny, 0,
-				sx3 - snx, sy3 - sny, 0, 1, x3 - x1, y3 - y1, nx, ny, 0
-		};
-		
-		buffer.clear();
-		buffer.put(quad);
-		buffer.flip();
-		
-		glBindBuffer(GL_ARRAY_BUFFER, wallvboID);
-		glBufferSubData(GL_ARRAY_BUFFER, 0, buffer);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
+		for(int i = 0; i < points.size(); i += 4) {
+			float x2 = points.get(i).floatValue();
+			float y2 = points.get(i + 1).floatValue();
+			float x3 = points.get(i + 2).floatValue();
+			float y3 = points.get(i + 3).floatValue();
+			
+			float sx1 = (x - level.xo) * Tile.TILE_WIDTH_H / Graphics.getWidth() * 2 - 1;
+			float sy1 = (y - level.yo) * Tile.TILE_WIDTH_H / Graphics.getHeight() * -2 + 1;
+			float sx2 = (x2 - level.xo) * Tile.TILE_WIDTH_H / Graphics.getWidth() * 2 - 1;
+			float sy2 = (y2 - level.yo) * Tile.TILE_WIDTH_H / Graphics.getHeight() * -2 + 1;
+			float sx3 = (x3 - level.xo) * Tile.TILE_WIDTH_H / Graphics.getWidth() * 2 - 1;
+			float sy3 = (y3 - level.yo) * Tile.TILE_WIDTH_H / Graphics.getHeight() * -2 + 1;
+			
+			float nx = y3 - y2;
+			float ny = x2 - x3;
+			float length = (float) Math.sqrt(nx * nx + ny * ny);
+			nx /= length;
+			ny /= length;
+			
+			float snx = nx * Tile.TILE_WIDTH_H * 2 / Graphics.getWidth();
+			float sny = ny * Tile.TILE_WIDTH_H * -2 / Graphics.getHeight();
+			
+			float[] quad = {
+					sx2, sy2, 0, 1, x2 - x, y2 - y, nx, ny, 1,
+					sx3, sy3, 0, 1, x3 - x, y3 - y, nx, ny, 1,
+					sx2 - snx, sy2 - sny, 0, 1, x2 - x, y2 - y, nx, ny, 0,
+					sx3 - snx, sy3 - sny, 0, 1, x3 - x, y3 - y, nx, ny, 0
+			};
+			
+			buffer.clear();
+			buffer.put(quad);
+			buffer.flip();
+			
+			glBindBuffer(GL_ARRAY_BUFFER, wallvboID);
+			glBufferSubData(GL_ARRAY_BUFFER, 0, buffer);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
+			
+		}
 		
 		glUseProgram(0);
 		glBindVertexArray(0);
@@ -364,6 +391,7 @@ public class LightMap {
 		glDisableVertexAttribArray(1);
 		glDisableVertexAttribArray(2);
 		glDisableVertexAttribArray(3);
+		
 	}
 	
 	public int getFrameBuffer() {
