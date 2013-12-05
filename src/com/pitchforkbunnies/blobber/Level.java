@@ -10,7 +10,7 @@ import javax.imageio.ImageIO;
 
 public abstract class Level {
 	public ResourceBundle bundle;
-	public int width, height;
+	public int width, height, spawnx, spawny;
 	public Tile[][] tiles;
 	public List<Entity> entities = new ArrayList<Entity>();
 	public float gravity = 0.01f;
@@ -25,9 +25,12 @@ public abstract class Level {
 	 */
 	public Level(String ref, ResourceBundle bundle) {
 		this.bundle = bundle;
-		player = new EntityPlayer(this);
-		entities.add(player);
 		loadLevel(ref);
+		
+		player = new EntityPlayer(this);
+		player.x = spawnx;
+		player.y = spawny;
+		entities.add(player);
 	}
 	
 	private void loadLevel(String ref) {
@@ -54,6 +57,12 @@ public abstract class Level {
 		switch(color & 0xFFFFFF) {
 		case 0x000000: return new Tile(this, x, y).setWalkable(false).setSprite(2, 1, 1);
 		case 0xFFFFFF: return new Tile(this, x, y).setWalkable(true).setSprite(1, 1, 1);
+		case 0x0026FF:
+			spawnx = x;
+			spawny = y;
+			return new Tile(this, x, y).setWalkable(true).setSprite(1, 1, 1);
+		case 0xFF0000: return new TileEnd(this, x, y);
+		case 0x00FF21: return new TileSpike(this, x, y);
 		default: return new Tile(this, x, y);
 		}
 	}
@@ -117,6 +126,10 @@ public abstract class Level {
 		return false;
 	}
 
+	public void win() {
+		System.out.println("YOU WIN");
+	}
+	
 	public void fixCamera(Graphics g) {
 		xo = player.x - 0.5f * Graphics.getWidth() / Tile.TILE_WIDTH_H;
 		yo = player.y - 0.5f * Graphics.getHeight() / Tile.TILE_WIDTH_H;

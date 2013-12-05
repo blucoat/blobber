@@ -65,6 +65,11 @@ public class Entity {
 			}
 		}
 		
+		level.tiles[(int) x][(int) y].onWalk(this);
+		level.tiles[(int) (x + width)][(int) y].onWalk(this);
+		level.tiles[(int) x][(int) (y + height)].onWalk(this);
+		level.tiles[(int) (x + width)][(int) (y + height)].onWalk(this);
+		
 		dx *= 0.25f;
 		if((onLeftWall || onRightWall) && canWallJump)
 			dy *= 0.25;

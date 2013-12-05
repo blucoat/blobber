@@ -349,8 +349,6 @@ public class LightMap {
 			float x3 = points.get(i + 2).floatValue();
 			float y3 = points.get(i + 3).floatValue();
 			
-			float sx1 = (x - level.xo) * Tile.TILE_WIDTH_H / Graphics.getWidth() * 2 - 1;
-			float sy1 = (y - level.yo) * Tile.TILE_WIDTH_H / Graphics.getHeight() * -2 + 1;
 			float sx2 = (x2 - level.xo) * Tile.TILE_WIDTH_H / Graphics.getWidth() * 2 - 1;
 			float sy2 = (y2 - level.yo) * Tile.TILE_WIDTH_H / Graphics.getHeight() * -2 + 1;
 			float sx3 = (x3 - level.xo) * Tile.TILE_WIDTH_H / Graphics.getWidth() * 2 - 1;

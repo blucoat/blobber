@@ -72,4 +72,7 @@ public class Tile {
 				frames, period);
 		return this;
 	}
+
+	public void onWalk(Entity e) {
+	}
 }
