@@ -34,13 +34,16 @@ public class EntityPlayer extends Entity {
 				dy -= 0.2;
 				dx += 0.1;
 				jumpTimer = 15;
+				level.bundle.sounds.jump.playAsSoundEffect(1, 1, false);
 			} else if(rightWallTimer > 0) {
 				rightWallTimer = 0;
 				dy -= 0.2;
 				dx -= 0.1;
 				jumpTimer = 15;
+				level.bundle.sounds.jump.playAsSoundEffect(1, 1, false);
 			} else if(onGround) {
 				dy -= 0.2;
+				level.bundle.sounds.jump.playAsSoundEffect(1, 1, false);
 			}
 				
 		}	

@@ -38,7 +38,6 @@ public class BlobberGame {
 		graphics = new Graphics();
 		bundle = new ResourceBundle();
 		currentScreen = new GameScreen(new LevelTest(bundle), bundle);
-		//currentScreen = new TestScreen(bundle);
 	}
 	
 	private void gameLoop() {

@@ -8,12 +8,14 @@ import org.newdawn.slick.openal.Audio;
 import org.newdawn.slick.openal.AudioLoader;
 
 public class SoundBundle {
-	private Audio loadSound(String ref) {
+	public Audio jump = loadSound("com/pitchforkbunnies/blobber/res/jump.wav", "WAV");
+	
+	private Audio loadSound(String ref, String type) {
 		InputStream in = getClass().getClassLoader().getResourceAsStream(ref);
 		if(in == null)
 			throw new RuntimeException("Could not find audio file: " + ref);
 		try {
-			return AudioLoader.getAudio("OGG", in);	//temporary
+			return AudioLoader.getAudio(type, in);	//temporary
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
