@@ -4,6 +4,10 @@ import org.lwjgl.input.Keyboard;
 
 public class EntityPlayer extends Entity {
 	
+	private int jumpTimer = 0;
+	private int leftWallTimer = 0;
+	private int rightWallTimer = 0;
+	
 	public EntityPlayer(Level level) {
 		super(level);
 		width = 30.0f / 32;
@@ -16,19 +20,41 @@ public class EntityPlayer extends Entity {
 	public void tick() {
 		super.tick();
 		
+		if(leftWallTimer > 0) leftWallTimer--;
+		if(rightWallTimer > 0) rightWallTimer--;
+		
+		if(onLeftWall)
+			leftWallTimer = 5;
+		if(onRightWall) 
+			rightWallTimer = 5;
+		
 		if(Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
-			if(onLeftWall) {
+			if(leftWallTimer > 0) {
+				leftWallTimer = 0;
 				dy -= 0.2;
-			} else if(onRightWall) {
+				dx += 0.1;
+				jumpTimer = 15;
+			} else if(rightWallTimer > 0) {
+				rightWallTimer = 0;
 				dy -= 0.2;
+				dx -= 0.1;
+				jumpTimer = 15;
 			} else if(onGround) {
 				dy -= 0.2;
 			}
 				
-		}
+		}	
 		
-		if(Keyboard.isKeyDown(Keyboard.KEY_A)) dx -= 0.05;
-		if(Keyboard.isKeyDown(Keyboard.KEY_D)) dx += 0.05;
+		if(jumpTimer == 0) {
+			dx *= 0.25f;
+			if(Keyboard.isKeyDown(Keyboard.KEY_A)) dx -= 0.05;
+			if(Keyboard.isKeyDown(Keyboard.KEY_D)) dx += 0.05;
+		} else {
+			jumpTimer--;
+			dx *= 0.9f;
+			if(Keyboard.isKeyDown(Keyboard.KEY_A)) dx -= 0.01;
+			if(Keyboard.isKeyDown(Keyboard.KEY_D)) dx += 0.01;
+		}
 	}
 	
 	@Override
