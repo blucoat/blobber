@@ -10,6 +10,8 @@ public class GameScreen extends Screen {
 		super(bundle);
 		this.level = level;
 		lightmap = new LightMap(level);
+		lightmap.setAmbientLight(.05f, .05f, .1f);
+		lightmap.setAttenuation(1, 0, 1);
 	}
 	
 	@Override
@@ -24,9 +26,8 @@ public class GameScreen extends Screen {
 		level.fixCamera(g);
 		
 		lightmap.begin();
-		lightmap.renderLight(level.player.x + level.player.width / 2, level.player.y + level.player.height / 2, 1.0f, 0.5f, 0.0f, 1.0f);
-		lightmap.renderLight(15.5f, 15.5f, 0.5f, 0.5f, 1.0f, 1.0f);
-		//lightmap.drawTriangle(11, 17, 15, 17, 11, 21);
+		lightmap.renderLight(level.player.x + level.player.width / 2, level.player.y + level.player.height / 2, 1f, 0.2f, 0);
+		lightmap.renderLight(16, 16, 0.5f, 0.5f, 1.0f);
 		lightmap.end();
 		g.setLightmap(lightmap);
 	}

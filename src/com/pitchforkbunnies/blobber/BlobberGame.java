@@ -9,7 +9,7 @@ import org.lwjgl.util.glu.GLU;
 
 public class BlobberGame {
 	
-	private static final boolean VSYNC_IN_WINDOWED = false;	//stops screen tearing when aero is disabled, causes stuttering when it is
+	private static final boolean VSYNC_IN_WINDOWED = true;	//stops screen tearing when aero is disabled, causes stuttering when it is
 	
 	private Screen currentScreen;
 	private Graphics graphics;

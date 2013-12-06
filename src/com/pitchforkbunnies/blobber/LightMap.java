@@ -4,7 +4,6 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
-import static org.lwjgl.opengl.EXTFramebufferObject.*;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -26,6 +25,9 @@ public class LightMap {
 	
 	private Level level;
 	
+	private float ar = 0, ag = 0, ab = 0;
+	private float ax = 0, ay = 0, az = 1;
+	
 	public LightMap(Level level) {
 		setLevel(level);
 		initFrameBuffer();
@@ -41,15 +43,14 @@ public class LightMap {
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, Display.getWidth(), Display.getHeight(), 0, GL_RGBA, GL_INT, (java.nio.ByteBuffer) null);
 		glBindTexture(GL_TEXTURE_2D, 0);
 		
-		frameID = glGenFramebuffersEXT();
-		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, frameID);
-		glFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, textureID, 0);
+		frameID = glGenFramebuffers();
+		glBindFramebuffer(GL_FRAMEBUFFER, frameID);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureID, 0);
 		
 		glViewport(0, 0, Display.getWidth(), Display.getHeight());
-		//glClearColor(.5f, .5f, .5f, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
 		
-		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 	
 	private void initShaders() {
@@ -183,17 +184,36 @@ public class LightMap {
 		return v;
 	}
 	
+	public void setAmbientLight(float r, float g, float b) {
+		ar = r;
+		ag = g;
+		ab = b;
+	}
+	
+	public void setAttenuation(float x, float y, float z) {
+		ax = x;
+		ay = y;
+		az = z;
+	}
+	
 	public void begin() {
-		glBindFramebufferEXT(GL_FRAMEBUFFER, frameID);
+		glBindFramebuffer(GL_FRAMEBUFFER, frameID);
+		glClearColor(ar, ag, ab, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
 		glBlendFunc(GL_ONE, GL_ONE);
 	}
 	
 	public void end() {
-		glBindFramebufferEXT(GL_FRAMEBUFFER, 0);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 	
-	public void renderLight(float x, float y, float r, float g, float b, float intensity) {
+	public void renderLight(float x, float y, float r, float g, float b) {
+		
+		//this is a really dumb hack, but it works... I think
+		if(x == (int) x && y == (int) y) {
+			x += 0.01;
+			y += 0.01;
+		}
 		
 		//calculate angles
 		for(Vertex v : vertices) {
@@ -294,8 +314,8 @@ public class LightMap {
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
 		
-		glUniform4f(colorID, r, g, b, intensity);
-		glUniform3f(attenuationID, 1, 0, .5f);
+		glUniform3f(colorID, r, g, b);
+		glUniform3f(attenuationID, ax, ay, az);
 		
 		for(int i = 0; i < points.size(); i += 4) {
 			float x2 = points.get(i).floatValue();
@@ -333,8 +353,8 @@ public class LightMap {
 		
 		glUseProgram(wallID);
 		
-		glUniform4f(wallColorID, r, g, b, intensity);
-		glUniform3f(wallAttenuationID, 1, 0, .5f);
+		glUniform3f(wallColorID, r, g, b);
+		glUniform3f(wallAttenuationID, ax, ay, az);
 		
 		glBindVertexArray(wallvaoID);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, wallIndexID);
@@ -397,7 +417,7 @@ public class LightMap {
 	}
 	
 	public void release() {
-		glDeleteFramebuffersEXT(frameID);
+		glDeleteFramebuffers(frameID);
 		glDeleteTextures(textureID);
 		
 		glUseProgram(0);

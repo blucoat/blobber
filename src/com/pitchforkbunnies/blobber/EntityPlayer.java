@@ -30,4 +30,12 @@ public class EntityPlayer extends Entity {
 		if(Keyboard.isKeyDown(Keyboard.KEY_A)) dx -= 0.05;
 		if(Keyboard.isKeyDown(Keyboard.KEY_D)) dx += 0.05;
 	}
+	
+	@Override
+	public void die() {
+		x = level.spawnx;
+		y = level.spawny;
+		dx = 0;
+		dy = 0;
+	}
 }

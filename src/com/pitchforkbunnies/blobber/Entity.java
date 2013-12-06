@@ -74,4 +74,8 @@ public class Entity {
 		if((onLeftWall || onRightWall) && canWallJump)
 			dy *= 0.25;
 	}
+	
+	public void die() {
+		isDead = true;
+	}
 }

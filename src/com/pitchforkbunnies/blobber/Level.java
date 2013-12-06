@@ -55,7 +55,7 @@ public abstract class Level {
 	
 	private Tile getTileFromColor(int color, int x, int y) {
 		switch(color & 0xFFFFFF) {
-		case 0x000000: return new Tile(this, x, y).setWalkable(false).setSprite(2, 1, 1);
+		case 0x000000: return new Tile(this, x, y).setWalkable(false).setSprite(4, 1, 1);
 		case 0xFFFFFF: return new Tile(this, x, y).setWalkable(true).setSprite(1, 1, 1);
 		case 0x0026FF:
 			spawnx = x;
