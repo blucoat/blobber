@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.BufferUtils;
+import org.lwjgl.Sys;
 import org.lwjgl.opengl.Display;
 
 
@@ -40,14 +41,17 @@ public class LightMap {
 		glBindTexture(GL_TEXTURE_2D, textureID);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, Display.getWidth(), Display.getHeight(), 0, GL_RGBA, GL_INT, (java.nio.ByteBuffer) null);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Display.getWidth(), Display.getHeight(), 0, GL_RGBA, GL_INT, (java.nio.ByteBuffer) null);
 		glBindTexture(GL_TEXTURE_2D, 0);
+		
 		
 		frameID = glGenFramebuffers();
 		glBindFramebuffer(GL_FRAMEBUFFER, frameID);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureID, 0);
 		
-		glViewport(0, 0, Display.getWidth(), Display.getHeight());
+		Sys.alert("info", frameID + ", " + textureID);
+		
+		//glViewport(0, 0, Display.getWidth(), Display.getHeight());
 		glClear(GL_COLOR_BUFFER_BIT);
 		
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);

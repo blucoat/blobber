@@ -2,9 +2,11 @@ package com.pitchforkbunnies.blobber;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
+import org.lwjgl.opengl.ContextAttribs;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.PixelFormat;
 import org.lwjgl.util.glu.GLU;
 
 public class BlobberGame {
@@ -23,17 +25,23 @@ public class BlobberGame {
 	
 	private void init() {
 		try {
+			ContextAttribs attribs = new ContextAttribs(3, 2)
+				.withProfileCore(true)
+				.withForwardCompatible(true);
+			
 			Display.setDisplayMode(new DisplayMode(800, 600));
 			Display.setVSyncEnabled(VSYNC_IN_WINDOWED);
 			Display.setTitle("Blobber 3: Revelations");
 			Display.setResizable(true);
-			Display.create();
+			Display.create(new PixelFormat(), attribs);
 			
 			GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
-		} catch (LWJGLException e) {			
+		} catch (LWJGLException e) {
 			e.printStackTrace();
 			System.exit(-1);
 		}
+		
+		System.out.println("Current OpenGL version: " + GL11.glGetString(GL11.GL_VERSION));
 		
 		graphics = new Graphics();
 		bundle = new ResourceBundle();
