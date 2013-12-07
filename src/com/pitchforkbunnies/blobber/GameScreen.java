@@ -1,6 +1,5 @@
 package com.pitchforkbunnies.blobber;
 
-
 public class GameScreen extends Screen {
 
 	private Level level;
@@ -29,6 +28,7 @@ public class GameScreen extends Screen {
 		lightmap.renderLight(level.player.x + level.player.width / 2, level.player.y + level.player.height / 2, 1f, 0.2f, 0);
 		lightmap.renderLight(16, 16, 0.5f, 0.5f, 1.0f);
 		lightmap.end();
+		
 		g.setLightmap(lightmap);
 	}
 	

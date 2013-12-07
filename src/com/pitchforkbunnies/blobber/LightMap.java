@@ -1,12 +1,14 @@
 package com.pitchforkbunnies.blobber;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL13.*;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,22 +39,20 @@ public class LightMap {
 	}
 	
 	private void initFrameBuffer() {
-		textureID = glGenTextures();
-		glBindTexture(GL_TEXTURE_2D, textureID);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Display.getWidth(), Display.getHeight(), 0, GL_RGBA, GL_INT, (java.nio.ByteBuffer) null);
-		glBindTexture(GL_TEXTURE_2D, 0);
-		
-		
 		frameID = glGenFramebuffers();
 		glBindFramebuffer(GL_FRAMEBUFFER, frameID);
+		
+		textureID = glGenTextures();
+		glBindTexture(GL_TEXTURE_2D, textureID);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Display.getWidth(), Display.getHeight(), 0, GL_RGBA, GL_UNSIGNED_INT, (java.nio.ByteBuffer) null);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureID, 0);
 		
-		Sys.alert("info", frameID + ", " + textureID);
-		
 		//glViewport(0, 0, Display.getWidth(), Display.getHeight());
-		glClear(GL_COLOR_BUFFER_BIT);
+		//glClear(GL_COLOR_BUFFER_BIT);
 		
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
@@ -204,6 +204,7 @@ public class LightMap {
 		glBindFramebuffer(GL_FRAMEBUFFER, frameID);
 		glClearColor(ar, ag, ab, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
+		
 		glBlendFunc(GL_ONE, GL_ONE);
 	}
 	

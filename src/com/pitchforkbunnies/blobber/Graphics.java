@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.ARBShaderObjects;
@@ -52,8 +53,15 @@ public class Graphics {
 	public void setLightmap(LightMap map) {
 		if(map == null) {
 			lightingEnabled = false;
+			sizeID = glGetUniformLocation(p2ID, "size");
+			offsetID = glGetUniformLocation(p2ID, "offset");
+			transformID = glGetUniformLocation(p2ID, "transform");
+			
 		} else { 
 			lightingEnabled = true;
+			sizeID = glGetUniformLocation(p1ID, "size");
+			offsetID = glGetUniformLocation(p1ID, "offset");
+			transformID = glGetUniformLocation(p1ID, "transform");
 			glActiveTexture(GL_TEXTURE1);
 			glBindTexture(GL_TEXTURE_2D, map.getFrameBuffer());
 		}
