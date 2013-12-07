@@ -1,4 +1,4 @@
-#version 150 core
+#version 150
 
 uniform sampler2D texture_diffuse, lightmap;
 uniform vec2 offset, size;
