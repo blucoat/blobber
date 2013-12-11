@@ -1,4 +1,8 @@
-package com.pitchforkbunnies.blobber;
+package com.pitchforkbunnies.blobber.entity;
+
+import com.pitchforkbunnies.blobber.core.Entity;
+import com.pitchforkbunnies.blobber.core.Level;
+import com.pitchforkbunnies.blobber.core.Sprite;
 
 public class EntityBasicEnemy extends Entity {
 	private int timeToJump = 200;

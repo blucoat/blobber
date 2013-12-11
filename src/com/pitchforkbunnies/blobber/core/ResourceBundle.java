@@ -1,4 +1,4 @@
-package com.pitchforkbunnies.blobber;
+package com.pitchforkbunnies.blobber.core;
 
 public class ResourceBundle {
 	public TextureBundle textures;

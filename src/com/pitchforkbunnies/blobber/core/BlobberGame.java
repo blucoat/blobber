@@ -1,4 +1,4 @@
-package com.pitchforkbunnies.blobber;
+package com.pitchforkbunnies.blobber.core;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
@@ -8,6 +8,9 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.PixelFormat;
 import org.lwjgl.util.glu.GLU;
+
+import com.pitchforkbunnies.blobber.level.LevelTest;
+import com.pitchforkbunnies.blobber.ui.GameScreen;
 
 public class BlobberGame {
 	

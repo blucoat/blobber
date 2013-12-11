@@ -1,6 +1,11 @@
-package com.pitchforkbunnies.blobber;
+package com.pitchforkbunnies.blobber.entity;
 
 import org.lwjgl.input.Keyboard;
+
+import com.pitchforkbunnies.blobber.core.Entity;
+import com.pitchforkbunnies.blobber.core.InputManager;
+import com.pitchforkbunnies.blobber.core.Level;
+import com.pitchforkbunnies.blobber.core.Sprite;
 
 public class EntityPlayer extends Entity {
 	

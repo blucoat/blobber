@@ -1,4 +1,4 @@
-package com.pitchforkbunnies.blobber;
+package com.pitchforkbunnies.blobber.core;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.*;
@@ -20,6 +20,7 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.newdawn.slick.opengl.Texture;
+
 
 
 public class Graphics {
@@ -154,7 +155,7 @@ public class Graphics {
 	}
 	
 	public static int loadShader(String ref, int type) {
-		InputStream in = Graphics.class.getClassLoader().getResourceAsStream("com/pitchforkbunnies/blobber/shaders/" + ref);
+		InputStream in = Graphics.class.getClassLoader().getResourceAsStream("com/pitchforkbunnies/blobber/shader/" + ref);
 		if(in == null)
 			throw new RuntimeException("Could not load file: " + ref);
 		

@@ -1,4 +1,10 @@
-package com.pitchforkbunnies.blobber;
+package com.pitchforkbunnies.blobber.ui;
+
+import com.pitchforkbunnies.blobber.core.Graphics;
+import com.pitchforkbunnies.blobber.core.Level;
+import com.pitchforkbunnies.blobber.core.LightMap;
+import com.pitchforkbunnies.blobber.core.ResourceBundle;
+import com.pitchforkbunnies.blobber.core.Screen;
 
 public class GameScreen extends Screen {
 

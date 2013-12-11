@@ -1,4 +1,8 @@
-package com.pitchforkbunnies.blobber;
+package com.pitchforkbunnies.blobber.tile;
+
+import com.pitchforkbunnies.blobber.core.Entity;
+import com.pitchforkbunnies.blobber.core.Level;
+import com.pitchforkbunnies.blobber.core.Tile;
 
 public class TileEnd extends Tile {
 

@@ -1,6 +1,7 @@
-package com.pitchforkbunnies.blobber;
+package com.pitchforkbunnies.blobber.core;
 
 import org.newdawn.slick.opengl.Texture;
+
 
 public class Sprite {
 	private Texture tex;

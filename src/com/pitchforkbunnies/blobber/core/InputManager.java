@@ -1,4 +1,4 @@
-package com.pitchforkbunnies.blobber;
+package com.pitchforkbunnies.blobber.core;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;

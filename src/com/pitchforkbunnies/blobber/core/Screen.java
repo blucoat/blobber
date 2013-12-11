@@ -1,4 +1,5 @@
-package com.pitchforkbunnies.blobber;
+package com.pitchforkbunnies.blobber.core;
+
 
 public abstract class Screen {
 	protected ResourceBundle bundle;

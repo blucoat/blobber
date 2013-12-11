@@ -1,4 +1,5 @@
-package com.pitchforkbunnies.blobber;
+package com.pitchforkbunnies.blobber.core;
+
 
 public class Entity {
 	public float x, y, width, height, dx, dy;

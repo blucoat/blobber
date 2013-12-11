@@ -1,4 +1,4 @@
-package com.pitchforkbunnies.blobber;
+package com.pitchforkbunnies.blobber.core;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -7,6 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+
+import com.pitchforkbunnies.blobber.entity.EntityPlayer;
+import com.pitchforkbunnies.blobber.tile.TileEnd;
+import com.pitchforkbunnies.blobber.tile.TileSpike;
 
 public abstract class Level {
 	public ResourceBundle bundle;
