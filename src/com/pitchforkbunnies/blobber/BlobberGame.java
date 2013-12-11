@@ -35,6 +35,8 @@ public class BlobberGame {
 			Display.setResizable(true);
 			Display.create(new PixelFormat(), attribs);
 			
+			InputManager.init();
+			
 			GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
 		} catch (LWJGLException e) {
 			e.printStackTrace();
@@ -57,6 +59,8 @@ public class BlobberGame {
 		while(!Display.isCloseRequested()) {
 			if(Display.wasResized())
 				GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
+			
+			InputManager.update();
 			
 			double now = (double) Sys.getTime() / Sys.getTimerResolution();
 			secondsToDo += now - lastTime;
@@ -92,6 +96,7 @@ public class BlobberGame {
 	private void cleanup() {
 		graphics.release();
 		bundle.release();
+		InputManager.destroy();
 		Display.destroy();
 	}
 	

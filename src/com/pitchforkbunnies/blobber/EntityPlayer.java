@@ -28,7 +28,7 @@ public class EntityPlayer extends Entity {
 		if(onRightWall) 
 			rightWallTimer = 5;
 		
-		if(Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
+		if(InputManager.keyPressed(Keyboard.KEY_SPACE)) {
 			if(leftWallTimer > 0) {
 				leftWallTimer = 0;
 				dy -= 0.2;
@@ -50,13 +50,13 @@ public class EntityPlayer extends Entity {
 		
 		if(jumpTimer == 0) {
 			dx *= 0.25f;
-			if(Keyboard.isKeyDown(Keyboard.KEY_A)) dx -= 0.05;
-			if(Keyboard.isKeyDown(Keyboard.KEY_D)) dx += 0.05;
+			if(InputManager.keyDown(Keyboard.KEY_A)) dx -= 0.05;
+			if(InputManager.keyDown(Keyboard.KEY_D)) dx += 0.05;
 		} else {
 			jumpTimer--;
 			dx *= 0.9f;
-			if(Keyboard.isKeyDown(Keyboard.KEY_A)) dx -= 0.01;
-			if(Keyboard.isKeyDown(Keyboard.KEY_D)) dx += 0.01;
+			if(InputManager.keyDown(Keyboard.KEY_A)) dx -= 0.01;
+			if(InputManager.keyDown(Keyboard.KEY_D)) dx += 0.01;
 		}
 	}
 	

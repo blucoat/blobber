@@ -118,11 +118,13 @@ public abstract class Level {
 		if(x < 0 || y < 0 || x + e.width >= width || y + e.height >= height)
 			return true;
 		
-		if(tiles[(int) x][(int) y].collides(e)) return true;
-		if(tiles[(int) (x + e.width)][(int) y].collides(e)) return true;
-		if(tiles[(int) x][(int) (y + e.height)].collides(e)) return true;
-		if(tiles[(int) (x + e.width)][(int) (y + e.height)].collides(e)) return true;
-		
+		int xSamples = (int) (e.width + 1), ySamples = (int) (e.height + 1);
+		float xStep = e.width / xSamples, yStep = e.width / ySamples;
+		for(int xx = 0; xx <= xSamples; xx++) {
+			for(int yy = 0; yy <= ySamples; yy++) {
+				if(tiles[(int) (x + xx * xStep)][(int) (y + yy * yStep)].collides(e)) return true;
+			}
+		}
 		return false;
 	}
 
