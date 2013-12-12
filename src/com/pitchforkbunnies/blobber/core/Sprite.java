@@ -52,10 +52,10 @@ public class Sprite {
 		g.bindTexture(tex);
 		int spritesNotOnRow = f - (tex.getImageWidth() - sx) / w + 1;
 		if(spritesNotOnRow <= 0) {
-			g.draw(x, y, sx + w * f, sy, w, h, 0);
+			g.draw(x, y, sx + w * f, sy, w, h);
 		} else {
 			int spritesPerRow = tex.getImageWidth() / w;
-			g.draw(x, y, (spritesNotOnRow - 1) % spritesPerRow * w, sy + (spritesNotOnRow / spritesPerRow + 1) * h, w, h, 0);
+			g.draw(x, y, (spritesNotOnRow - 1) % spritesPerRow * w, sy + (spritesNotOnRow / spritesPerRow + 1) * h, w, h);
 		}
 	}
 	

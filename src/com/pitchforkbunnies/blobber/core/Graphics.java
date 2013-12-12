@@ -16,9 +16,6 @@ import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.ARBShaderObjects;
 import org.lwjgl.opengl.Display;
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector2f;
-import org.lwjgl.util.vector.Vector3f;
 import org.newdawn.slick.opengl.Texture;
 
 
@@ -27,10 +24,9 @@ public class Graphics {
 	
 	private boolean lightingEnabled = false;
 	
-	private int vaoID, vboID, indexID, p1ID, p2ID, vsID, fs1ID, fs2ID, sizeID, offsetID, transformID, textureID, lightmapID;
-	private FloatBuffer transformBuffer = BufferUtils.createFloatBuffer(16);
-	private Matrix4f transform = new Matrix4f();
+	private int vaoID, vboID, indexID, p1ID, p2ID, vsID, fs1ID, fs2ID, textureID, lightmapID;
 	private Texture currentTexture = null;
+	private FloatBuffer buffer = BufferUtils.createFloatBuffer(24);
 	
 	private static final int TARGET_HEIGHT = 300; 
 	
@@ -53,15 +49,9 @@ public class Graphics {
 	public void setLightmap(LightMap map) {
 		if(map == null) {
 			lightingEnabled = false;
-			sizeID = glGetUniformLocation(p2ID, "size");
-			offsetID = glGetUniformLocation(p2ID, "offset");
-			transformID = glGetUniformLocation(p2ID, "transform");
 			
 		} else { 
 			lightingEnabled = true;
-			sizeID = glGetUniformLocation(p1ID, "size");
-			offsetID = glGetUniformLocation(p1ID, "offset");
-			transformID = glGetUniformLocation(p1ID, "transform");
 			glActiveTexture(GL_TEXTURE1);
 			glBindTexture(GL_TEXTURE_2D, map.getFrameBuffer());
 		}
@@ -91,7 +81,7 @@ public class Graphics {
 			
 		byte[] indices = {
 			0, 1, 2,
-			0, 2, 3
+			2, 1, 3
 		};
 			
 		ByteBuffer bb = BufferUtils.createByteBuffer(6);
@@ -104,7 +94,7 @@ public class Graphics {
 		vboID = glGenBuffers();
 		glBindBuffer(GL_ARRAY_BUFFER, vboID);
 			
-		glBufferData(GL_ARRAY_BUFFER, fb, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, fb, GL_STREAM_DRAW);
 		glVertexAttribPointer(0, 4, GL_FLOAT, false, 24, 0);	//vertex data
 		glVertexAttribPointer(1, 2, GL_FLOAT, false, 24, 16);	//st coords
 			
@@ -136,16 +126,8 @@ public class Graphics {
 		glLinkProgram(p1ID);
 		glValidateProgram(p1ID);
 		
-		transformID = glGetUniformLocation(p1ID, "transform");
-		offsetID = glGetUniformLocation(p1ID, "offset");
-		sizeID = glGetUniformLocation(p1ID, "size");
-		
 		glLinkProgram(p2ID);
 		glValidateProgram(p2ID);
-		
-		transformID = glGetUniformLocation(p2ID, "transform");
-		offsetID = glGetUniformLocation(p2ID, "offset");
-		sizeID = glGetUniformLocation(p2ID, "size");
 		
 		ARBShaderObjects.glUseProgramObjectARB(p1ID);
 		textureID = ARBShaderObjects.glGetUniformLocationARB(p1ID, "texture_diffuse");
@@ -183,6 +165,7 @@ public class Graphics {
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
 		
+		glBindBuffer(GL_ARRAY_BUFFER, vboID);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexID);
 		
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -195,6 +178,7 @@ public class Graphics {
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
 		
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		
 		glBindTexture(GL_TEXTURE_2D, 0);
@@ -218,32 +202,35 @@ public class Graphics {
 	 * @param w width of subsection
 	 * @param h height of subsection
 	 */
-	public void draw(float dx, float dy, int sx, int sy, int w, int h, float rot) {
+	public void draw(float dx, float dy, int sx, int sy, int w, int h) {
 		if(currentTexture == null) {
 			//Politely remind the programmer that he is retarded
 			System.out.println("You dunderface the texture is null!");
 			return;
 		}
 		
-		int tw = currentTexture.getImageWidth();
-		int th = currentTexture.getImageHeight();
+		float x1 = (dx - 0.5f * w / TARGET_HEIGHT) * 2 / Graphics.getWidth() - 1;
+		float y1 = (dy + 0.5f * h / TARGET_HEIGHT) * -2 / Graphics.getHeight() + 1;
+		float x2 = (dx + 0.5f * w / TARGET_HEIGHT) * 2 / Graphics.getWidth() - 1;
+		float y2 = (dy - 0.5f * h / TARGET_HEIGHT) * -2 / Graphics.getHeight() + 1;
 		
-		glUniform2f(offsetID, (float) sx / tw, (float) sy / th);
-		glUniform2f(sizeID, (float) w / tw, (float) h / th);
+		float sx1 = (float) sx / currentTexture.getTextureWidth();
+		float sy1 = (float) (sy + h) / currentTexture.getTextureHeight();
+		float sx2 = (float) (sx + w) / currentTexture.getTextureWidth();
+		float sy2 = (float) sy / currentTexture.getTextureHeight();
 		
-		int sw = Display.getWidth();
-		int sh = Display.getHeight();
-		float scale = (float) sh / TARGET_HEIGHT;
+		float[] vertices = {
+				x1, y1, 0, 1, sx1, sy1,
+				x2, y1, 0, 1, sx2, sy1,
+				x1, y2, 0, 1, sx1, sy2,
+				x2, y2, 0, 1, sx2, sy2
+		};
 		
+		buffer.clear();
+		buffer.put(vertices);
+		buffer.flip();
 		
-		Matrix4f.setIdentity(transform);
-		Matrix4f.translate(new Vector2f(dx * 2.0f * sh / sw - 1, dy * -2.0f + 1), transform, transform);
-		Matrix4f.scale(new Vector3f(w * scale / sw, h * scale / sh, 1), transform, transform);
-		Matrix4f.rotate(rot * (float) Math.PI / 180, new Vector3f(0, 0, 1), transform, transform);
-		transform.store(transformBuffer);
-		transformBuffer.flip();
-		glUniformMatrix4(transformID, true, transformBuffer);
-		
+		glBufferSubData(GL_ARRAY_BUFFER, 0, buffer);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
 	}
 	
