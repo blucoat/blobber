@@ -9,7 +9,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 import com.pitchforkbunnies.blobber.entity.EntityPlayer;
-import com.pitchforkbunnies.blobber.tile.TileEnd;
+import com.pitchforkbunnies.blobber.tile.TileTrigger;
 import com.pitchforkbunnies.blobber.tile.TileSpike;
 
 public abstract class Level {
@@ -17,8 +17,11 @@ public abstract class Level {
 	public int width, height, spawnx, spawny;
 	public Tile[][] tiles;
 	public List<Entity> entities = new ArrayList<Entity>();
+	public List<LightSource> lights = new ArrayList<LightSource>();
 	public float gravity = 0.01f;
 	public EntityPlayer player;
+	public LightMap lightmap;
+	public Level next = null;
 	
 	//upper-left corner of the viewport in tile space
 	public float xo = 0, yo = 0;
@@ -58,16 +61,24 @@ public abstract class Level {
 	}
 	
 	private Tile getTileFromColor(int color, int x, int y) {
-		switch(color & 0xFFFFFF) {
+		color = color & 0xFFFFFF;
+		switch(color) {
 		case 0x000000: return new Tile(this, x, y).setWalkable(false).setSprite(4, 1, 1);
 		case 0xFFFFFF: return new Tile(this, x, y).setWalkable(true).setSprite(1, 1, 1);
 		case 0x0026FF:
 			spawnx = x;
 			spawny = y;
 			return new Tile(this, x, y).setWalkable(true).setSprite(1, 1, 1);
-		case 0xFF0000: return new TileEnd(this, x, y);
+		case 0xFF0000: return new TileTrigger(this, x, y);
 		case 0x00FF21: return new TileSpike(this, x, y);
-		default: return new Tile(this, x, y);
+		default:
+			lights.add(new LightSource(
+					x + .5f, 
+					y + .5f, 
+					((color >> 16) & 0xFF) / 256f, 
+					((color >> 8) & 0xFF) / 256f,
+					(color & 0xFF) / 256f));
+			return new Tile(this, x, y).setWalkable(true).setSprite(1, 1, 1);
 		}
 	}
 	
@@ -91,6 +102,9 @@ public abstract class Level {
 	 * @param g The graphics handle to use
 	 */
 	public void render(Graphics g) {
+		lightmap.setAttenuation(.2f, .5f, 1);
+		lightmap.setAmbientLight(.05f, .05f, .1f);
+		
 		int right = (int) Math.min(width - 1, xo + Graphics.getWidth() / Tile.TILE_WIDTH_H);
 		int left = (int) Math.min(height - 1, yo + Graphics.getHeight() / Tile.TILE_WIDTH_H);
 		
@@ -132,9 +146,7 @@ public abstract class Level {
 		return false;
 	}
 
-	public void win() {
-		System.out.println("YOU WIN");
-	}
+	public abstract void trigger(int x, int y);
 	
 	public void fixCamera(Graphics g) {
 		xo = player.x - 0.5f * Graphics.getWidth() / Tile.TILE_WIDTH_H;

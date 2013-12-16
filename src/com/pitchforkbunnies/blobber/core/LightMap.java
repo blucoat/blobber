@@ -213,10 +213,8 @@ public class LightMap {
 	public void renderLight(float x, float y, float r, float g, float b) {
 		
 		//this is a really dumb hack, but it works... I think
-		if(x == (int) x && y == (int) y) {
-			x += 0.01;
-			y += 0.01;
-		}
+		x += 0.01;
+		y += 0.01;
 		
 		//calculate angles
 		for(Vertex v : vertices) {
