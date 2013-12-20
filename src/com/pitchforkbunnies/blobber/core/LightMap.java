@@ -419,7 +419,6 @@ public class LightMap {
 	}
 	
 	public void renderLight(float x, float y, float r, float g, float b) {
-		
 		//this is a really dumb hack, but it works... I think
 		x += 0.01;
 		y += 0.01;
@@ -429,16 +428,8 @@ public class LightMap {
 			v.angle = (float) Math.atan2(v.y - y, v.x - x);
 		}
 		
-		//sort vertices using some dumb O(n^2) thing I just made up
-		for(int i = 0; i < vertices.size(); i++) {
-			for(int j = i + 1; j < vertices.size(); j++) {
-				if(vertices.get(i).angle > vertices.get(j).angle) {
-					Vertex temp = vertices.get(i);
-					vertices.set(i, vertices.get(j));
-					vertices.set(j, temp);
-				}
-			}
-		}
+		//sort vertices
+		sort(0, vertices.size() - 1, vertices);
 		
 		//order start, end and dist of segments
 		for(Segment s : segments) {
@@ -618,7 +609,6 @@ public class LightMap {
 		glDisableVertexAttribArray(1);
 		glDisableVertexAttribArray(2);
 		glDisableVertexAttribArray(3);
-		
 	}
 	
 	public int getFrameBuffer() {
@@ -636,6 +626,30 @@ public class LightMap {
 		
 		glDeleteBuffers(vboID);
 		glDeleteVertexArrays(vaoID);
+	}
+	
+	private void sort(int start, int end, List<Vertex> arr) {
+		int i = start, j = end;
+		float pivot = arr.get(i).angle;
+		
+		while(i <= j) {
+			while(arr.get(i).angle < pivot)
+				i++;
+			while(arr.get(j).angle > pivot)
+				j--;
+			if(i <= j) {
+				Vertex temp = arr.get(i);
+				arr.set(i, arr.get(j));
+				arr.set(j, temp);
+				i++;
+				j--;
+			}
+		}
+		
+		if(j > start)
+			sort(start, j, arr);
+		if(i < end)
+			sort(i, end, arr);
 	}
 }
 

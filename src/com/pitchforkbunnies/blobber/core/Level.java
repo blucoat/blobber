@@ -137,7 +137,7 @@ public abstract class Level {
 			return true;
 		
 		int xSamples = (int) (e.width + 1), ySamples = (int) (e.height + 1);
-		float xStep = e.width / xSamples, yStep = e.width / ySamples;
+		float xStep = e.width / xSamples, yStep = e.height / ySamples;
 		for(int xx = 0; xx <= xSamples; xx++) {
 			for(int yy = 0; yy <= ySamples; yy++) {
 				if(tiles[(int) (x + xx * xStep)][(int) (y + yy * yStep)].collides(e)) return true;
