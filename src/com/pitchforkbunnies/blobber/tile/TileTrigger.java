@@ -4,9 +4,9 @@ import com.pitchforkbunnies.blobber.core.Entity;
 import com.pitchforkbunnies.blobber.core.Level;
 import com.pitchforkbunnies.blobber.core.Tile;
 
-public class TileEnd extends Tile {
+public class TileTrigger extends Tile {
 
-	public TileEnd(Level level, int x, int y) {
+	public TileTrigger(Level level, int x, int y) {
 		super(level, x, y);
 		setWalkable(true);
 		setSprite(1, 1, 1);
@@ -15,7 +15,7 @@ public class TileEnd extends Tile {
 	@Override
 	public void onWalk(Entity e) {
 		if(e == level.player)
-			level.win();
+			level.trigger(x, y);
 	}
 
 }

@@ -9,7 +9,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.PixelFormat;
 import org.lwjgl.util.glu.GLU;
 
-import com.pitchforkbunnies.blobber.level.LevelTest;
+import com.pitchforkbunnies.blobber.level.Level1Test;
 import com.pitchforkbunnies.blobber.ui.GameScreen;
 
 public class BlobberGame {
@@ -50,7 +50,7 @@ public class BlobberGame {
 		
 		graphics = new Graphics();
 		bundle = new ResourceBundle();
-		currentScreen = new GameScreen(new LevelTest(bundle), bundle);
+		currentScreen = new GameScreen(new Level1Test(bundle), bundle);
 	}
 	
 	private void gameLoop() {

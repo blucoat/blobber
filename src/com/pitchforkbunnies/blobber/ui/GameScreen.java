@@ -3,6 +3,7 @@ package com.pitchforkbunnies.blobber.ui;
 import com.pitchforkbunnies.blobber.core.Graphics;
 import com.pitchforkbunnies.blobber.core.Level;
 import com.pitchforkbunnies.blobber.core.LightMap;
+import com.pitchforkbunnies.blobber.core.LightSource;
 import com.pitchforkbunnies.blobber.core.ResourceBundle;
 import com.pitchforkbunnies.blobber.core.Screen;
 
@@ -13,15 +14,21 @@ public class GameScreen extends Screen {
 	
 	public GameScreen(Level level, ResourceBundle bundle) {
 		super(bundle);
-		this.level = level;
-		lightmap = new LightMap(level);
-		lightmap.setAmbientLight(.05f, .05f, .1f);
-		lightmap.setAttenuation(1, 0, 1);
+		loadLevel(level);
+	}
+	
+	public void loadLevel(Level newLevel) {
+		lightmap = new LightMap(newLevel);
+		newLevel.lightmap = lightmap;
+		level = newLevel;
 	}
 	
 	@Override
 	public Screen tick() {
 		level.tick();
+		if(level.next != null) {
+			loadLevel(level.next);
+		}
 		return null;
 	}
 
@@ -31,8 +38,9 @@ public class GameScreen extends Screen {
 		level.fixCamera(g);
 		
 		lightmap.begin();
-		lightmap.renderLight(level.player.x + level.player.width / 2, level.player.y + level.player.height / 2, 1f, 0.2f, 0);
-		lightmap.renderLight(16, 16, 0.5f, 0.5f, 1.0f);
+		for(LightSource ls : level.lights) {
+			lightmap.renderLight(ls.x, ls.y, ls.r, ls.g, ls.b);
+		}
 		lightmap.end();
 		
 		g.setLightmap(lightmap);
