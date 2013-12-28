@@ -11,6 +11,7 @@ public class GameScreen extends Screen {
 
 	private Level level;
 	private LightMap lightmap;
+	private int t = 0;
 	
 	public GameScreen(Level level, ResourceBundle bundle) {
 		super(bundle);
@@ -37,7 +38,11 @@ public class GameScreen extends Screen {
 		//Do this before any rendering
 		level.fixCamera(g);
 		
+		if(++t == 180)
+			t = 1;
+		
 		lightmap.begin();
+		lightmap.renderSun(60, 1, .5f, 0);
 		for(LightSource ls : level.lights) {
 			lightmap.renderLight(ls.x, ls.y, ls.r, ls.g, ls.b);
 		}

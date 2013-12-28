@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.BufferUtils;
+import org.lwjgl.Sys;
 import org.lwjgl.opengl.Display;
 
 
@@ -208,6 +209,213 @@ public class LightMap {
 	
 	public void end() {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+	
+	public void renderSun(float angle, float r, float g, float b) {
+		angle *= Math.PI / 180;
+		float nx = (float) Math.cos(angle);
+		float ny = (float) Math.sin(angle);
+		
+		for(Vertex v : vertices) {
+			v.u = nx * v.x + ny * v.y;
+			v.v = ny * v.x - nx * v.y;
+		}
+		
+		//sort vertices using some dumb O(n^2) thing I just made up
+		for(int i = 0; i < vertices.size(); i++) {
+			for(int j = i + 1; j < vertices.size(); j++) {
+				if(vertices.get(i).v > vertices.get(j).v) {
+					Vertex temp = vertices.get(i);
+					vertices.set(i, vertices.get(j));
+					vertices.set(j, temp);
+				}
+			}
+		}
+		
+		//order start, end and dist of segments
+		for(Segment s : segments) {
+			s.dist = (s.start.u + s.end.u) / 2;
+			
+			if(s.start.v > s.end.v) {
+				Vertex temp = s.start;
+				s.start = s.end;
+				s.end = temp;
+			}
+		}
+		
+		List<Float> points = new ArrayList<Float>();
+		List<Segment> open = new ArrayList<Segment>();
+		Segment lastSegment = null, currentSegment = null;
+		float lastX = 0, lastY = 0;
+		
+		for(Vertex v : vertices) {
+			
+			//set last segment to current one
+			lastSegment = currentSegment;
+			
+			//update open list
+			for(Segment s : v.segments) {
+				if(s.start.y == 0 && s.end.y == 0 && level.tiles[(int)s.start.x][0].walkable)
+					continue;
+				if(v == s.start) {
+					int j;
+					for(j = 0; j < open.size(); j++) {
+						if(open.get(j).dist > s.dist)
+							break;
+					}
+					open.add(j, s);
+				} else if(open.contains(s)) {
+					open.remove(s);
+				}
+			}
+			
+			if(!open.isEmpty())
+				currentSegment = open.get(0);
+			else
+				System.out.println("This still should only happen if v is the last vertex");
+			
+			if(currentSegment != lastSegment || currentSegment == null) {
+				float xx, yy, t, ix, iy;
+				
+				if(lastSegment != null) {
+					//find intersection with last segment
+					xx = lastSegment.end.x - lastSegment.start.x;
+					yy = lastSegment.end.y - lastSegment.start.y;
+					t = (xx * (lastSegment.start.y - v.y) - yy * (lastSegment.start.x - v.x)) /
+							(xx * ny - yy * nx);
+					ix = v.x + nx * t;
+					iy = v.y + ny * t;
+				
+					//drawTriangle(x, y, ix, iy, lastX, lastY, r, g, b, intensity);
+					points.add(Float.valueOf(ix));
+					points.add(Float.valueOf(iy));
+					points.add(Float.valueOf(lastX));
+					points.add(Float.valueOf(lastY));
+				}
+			
+				if(currentSegment != null) {
+					//find intersection with current segment, store it to lastX, lastY
+					//we can re-use variables because i'm lazy
+					xx = currentSegment.end.x - currentSegment.start.x;
+					yy = currentSegment.end.y - currentSegment.start.y;
+					t = (xx * (currentSegment.start.y - v.y) - yy * (currentSegment.start.x - v.x)) /
+							(xx * ny - yy * nx);
+					lastX = v.x + nx * t;
+					lastY = v.y + ny * t;
+				}
+			}
+		}
+		
+		glUseProgram(pID);
+		glBindVertexArray(vaoID);
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+		
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, wallIndexID);
+		
+		glUniform3f(colorID, r, g, b);
+		glUniform3f(attenuationID, 0, 0, 1);
+		
+		for(int i = 0; i < points.size(); i += 4) {
+			
+			float x1 = points.get(i).floatValue();
+			float y1 = points.get(i + 1).floatValue();
+			float x2 = points.get(i + 2).floatValue();
+			float y2 = points.get(i + 3).floatValue();
+			float x3 = x1 - y1 * nx / ny;
+			float y3 = 0;
+			float x4 = x2 - y2 * nx / ny;
+			float y4 = 0;
+			
+			float sx1 = (x1 - level.xo) * Tile.TILE_WIDTH_H / Graphics.getWidth() * 2 - 1;
+			float sy1 = (y1 - level.yo) * Tile.TILE_WIDTH_H / Graphics.getHeight() * -2 + 1;
+			float sx2 = (x2 - level.xo) * Tile.TILE_WIDTH_H / Graphics.getWidth() * 2 - 1;
+			float sy2 = (y2 - level.yo) * Tile.TILE_WIDTH_H / Graphics.getHeight() * -2 + 1;
+			float sx3 = (x3 - level.xo) * Tile.TILE_WIDTH_H / Graphics.getWidth() * 2 - 1;
+			float sy3 = (y3 - level.yo) * Tile.TILE_WIDTH_H / Graphics.getHeight() * -2 + 1;
+			float sx4 = (x4 - level.xo) * Tile.TILE_WIDTH_H / Graphics.getWidth() * 2 - 1;
+			float sy4 = (y4 - level.yo) * Tile.TILE_WIDTH_H / Graphics.getHeight() * -2 + 1;
+			
+			float[] values = {
+					sx1, sy1, 0, 1, 0, 0,
+					sx2, sy2, 0, 1, 0, 0,
+					sx3, sy3, 0, 1, 0, 0,
+					sx4, sy4, 0, 1, 0, 0
+			};
+			
+			buffer.clear();
+			buffer.put(values);
+			buffer.flip();
+			
+			glBindBuffer(GL_ARRAY_BUFFER, vboID);
+			glBufferSubData(GL_ARRAY_BUFFER, 0, buffer);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
+		}
+		
+		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);
+		
+		glUseProgram(wallID);
+		
+		glUniform3f(wallColorID, r, g, b);
+		glUniform3f(wallAttenuationID, 0, 0, 1);
+		
+		glBindVertexArray(wallvaoID);
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+		glEnableVertexAttribArray(2);
+		glEnableVertexAttribArray(3);
+		
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, wallIndexID);
+		
+		for(int i = 0; i < points.size(); i += 4) {
+			float x2 = points.get(i).floatValue();
+			float y2 = points.get(i + 1).floatValue();
+			float x3 = points.get(i + 2).floatValue();
+			float y3 = points.get(i + 3).floatValue();
+			
+			float sx2 = (x2 - level.xo) * Tile.TILE_WIDTH_H / Graphics.getWidth() * 2 - 1;
+			float sy2 = (y2 - level.yo) * Tile.TILE_WIDTH_H / Graphics.getHeight() * -2 + 1;
+			float sx3 = (x3 - level.xo) * Tile.TILE_WIDTH_H / Graphics.getWidth() * 2 - 1;
+			float sy3 = (y3 - level.yo) * Tile.TILE_WIDTH_H / Graphics.getHeight() * -2 + 1;
+			
+			float normx = y2 - y3;
+			float normy = x3 - x2;
+			float length = (float) Math.sqrt(normx * normx + normy * normy);
+			normx /= length;
+			normy /= length;
+			
+			float snx = normx * Tile.TILE_WIDTH_H * 2 / Graphics.getWidth();
+			float sny = normy * Tile.TILE_WIDTH_H * -2 / Graphics.getHeight();
+			
+			float[] quad = {
+					sx2, sy2, 0, 1, nx, ny, normx, normy, 1,
+					sx3, sy3, 0, 1, nx, ny, normx, normy, 1,
+					sx2 - snx, sy2 - sny, 0, 1, nx, ny, normx, normy, 0,
+					sx3 - snx, sy3 - sny, 0, 1, nx, ny, normx, normy, 0
+			};
+			
+			buffer.clear();
+			buffer.put(quad);
+			buffer.flip();
+			
+			glBindBuffer(GL_ARRAY_BUFFER, wallvboID);
+			glBufferSubData(GL_ARRAY_BUFFER, 0, buffer);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
+			
+		}
+		
+		glUseProgram(0);
+		glBindVertexArray(0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);
+		glDisableVertexAttribArray(2);
+		glDisableVertexAttribArray(3);
 	}
 	
 	public void renderLight(float x, float y, float r, float g, float b) {
@@ -451,6 +659,6 @@ class Segment {
 }
 
 class Vertex {
-	public float x, y, angle;
+	public float x, y, u, v, angle;
 	public List<Segment> segments = new ArrayList<Segment>();
 }
