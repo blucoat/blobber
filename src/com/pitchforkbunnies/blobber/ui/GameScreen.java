@@ -42,7 +42,7 @@ public class GameScreen extends Screen {
 			t = 1;
 		
 		lightmap.begin();
-		lightmap.renderSun(60, 1, .5f, 0);
+		//lightmap.renderSun(60, 1, .5f, 0);
 		for(LightSource ls : level.lights) {
 			lightmap.renderLight(ls.x, ls.y, ls.r, ls.g, ls.b);
 		}

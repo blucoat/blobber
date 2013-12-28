@@ -46,6 +46,7 @@ public abstract class Level {
 	
 	public void reset() {
 		entities.clear();
+		lights.clear();
 		
 		loadLevel(ref);
 		
@@ -114,6 +115,18 @@ public abstract class Level {
 		for(Entity e : entities) {
 			e.tick();
 			e.dy += gravity;
+		}
+		
+		for(int i = 0; i < entities.size(); i++) {
+			Entity e1 = entities.get(i);
+			for(int j = i + 1; j < entities.size(); j++) {
+				Entity e2 = entities.get(j);
+				if((e1.x + e1.width > e2.x && e1.x + e1.width < e2.x + e2.width || e2.x + e2.width > e1.x && e2.x + e2.width < e1.x + e1.width) && 
+						(e1.y + e1.height > e2.y && e1.y + e1.height < e2.y + e2.height || e2.y + e2.height > e1.y && e2.y + e2.height < e1.y + e1.height)) {
+					e1.onCollide(e2);
+					e2.onCollide(e1);
+				}
+			}
 		}
 		
 		for(Tile[] ta : tiles) {
