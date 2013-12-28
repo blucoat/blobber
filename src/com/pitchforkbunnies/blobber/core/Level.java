@@ -8,9 +8,10 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import com.pitchforkbunnies.blobber.entity.EntityChargerEnemy;
 import com.pitchforkbunnies.blobber.entity.EntityPlayer;
-import com.pitchforkbunnies.blobber.tile.TileTrigger;
 import com.pitchforkbunnies.blobber.tile.TileSpike;
+import com.pitchforkbunnies.blobber.tile.TileTrigger;
 
 public abstract class Level {
 	public ResourceBundle bundle;
@@ -23,6 +24,8 @@ public abstract class Level {
 	public LightMap lightmap;
 	public Level next = null;
 	
+	private String ref;
+	
 	//upper-left corner of the viewport in tile space
 	public float xo = 0, yo = 0;
 	
@@ -31,7 +34,19 @@ public abstract class Level {
 	 * @param ref the path to the image file representing the level
 	 */
 	public Level(String ref, ResourceBundle bundle) {
+		this.ref = ref;
 		this.bundle = bundle;
+		loadLevel(ref);
+		
+		player = new EntityPlayer(this);
+		player.x = spawnx;
+		player.y = spawny;
+		entities.add(player);
+	}
+	
+	public void reset() {
+		entities.clear();
+		
 		loadLevel(ref);
 		
 		player = new EntityPlayer(this);
@@ -71,6 +86,10 @@ public abstract class Level {
 			return new Tile(this, x, y).setWalkable(true).setSprite(1, 1, 1);
 		case 0xFF0000: return new TileTrigger(this, x, y);
 		case 0x00FF21: return new TileSpike(this, x, y);
+		case 0xFFFF00:
+			spawnEntity(new EntityChargerEnemy(this), x, y);
+			return new Tile(this, x, y).setWalkable(true).setSprite(1, 1, 1);
+			
 		default:
 			lights.add(new LightSource(
 					x + .5f, 
@@ -80,6 +99,12 @@ public abstract class Level {
 					(color & 0xFF) / 256f));
 			return new Tile(this, x, y).setWalkable(true).setSprite(1, 1, 1);
 		}
+	}
+	
+	private void spawnEntity(Entity e, float x, float y) {
+		e.x = x;
+		e.y = y;
+		entities.add(e);
 	}
 	
 	/**
@@ -94,6 +119,17 @@ public abstract class Level {
 		for(Tile[] ta : tiles) {
 			for(Tile t : ta)
 				t.tick();
+		}
+		
+		for(int i = entities.size() - 1; i >= 0; i--) {
+			if(entities.get(i).isDead) {
+				if(entities.get(i) == player) {
+					reset();
+					return;
+				}
+				
+				entities.remove(i);
+			}
 		}
 	}
 	

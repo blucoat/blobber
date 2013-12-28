@@ -54,22 +54,15 @@ public class EntityPlayer extends Entity {
 		}	
 		
 		if(jumpTimer == 0) {
-			dx *= 0.25f;
+			canFreeFall = false;
 			if(InputManager.keyDown(Keyboard.KEY_A)) dx -= 0.05;
 			if(InputManager.keyDown(Keyboard.KEY_D)) dx += 0.05;
 		} else {
+			canFreeFall = true;
 			jumpTimer--;
 			dx *= 0.9f;
 			if(InputManager.keyDown(Keyboard.KEY_A)) dx -= 0.01;
 			if(InputManager.keyDown(Keyboard.KEY_D)) dx += 0.01;
 		}
-	}
-	
-	@Override
-	public void die() {
-		x = level.spawnx;
-		y = level.spawny;
-		dx = 0;
-		dy = 0;
 	}
 }

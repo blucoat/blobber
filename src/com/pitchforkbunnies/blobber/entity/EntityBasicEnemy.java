@@ -13,6 +13,7 @@ public class EntityBasicEnemy extends Entity {
 		width = 30.0f / 32;
 		height = 30.0f / 32;
 		sprite = new Sprite(level.bundle.textures.sprites, 32, 32, 30, 30, 1, 1);
+		canFreeFall = false;
 	}
 	
 	@Override

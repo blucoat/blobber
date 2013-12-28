@@ -10,6 +10,7 @@ public class Entity {
 	public boolean onLeftWall = false;
 	public boolean onRightWall = false;
 	public boolean canWallJump = false;
+	public boolean canFreeFall = true;
 	
 	public Entity(Level level) {
 		this.level = level;
@@ -73,6 +74,12 @@ public class Entity {
 		
 		if((onLeftWall || onRightWall) && canWallJump)
 			dy *= 0.25;
+		if(!canFreeFall)
+			dx *= 0.25;
+	}
+	
+	public void onCollide(Entity e) {
+		
 	}
 	
 	public void die() {
