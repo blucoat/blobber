@@ -12,6 +12,10 @@ public class Entity {
 	public boolean canWallJump = false;
 	public boolean canFreeFall = true;
 	
+	/**
+	 * Constructs a new entity at position 0, 0
+	 * @param level
+	 */
 	public Entity(Level level) {
 		this.level = level;
 	}
@@ -78,10 +82,17 @@ public class Entity {
 			dx *= 0.25;
 	}
 	
+	/**
+	 * Handle a collision with another entity.
+	 * @param e
+	 */
 	public void onCollide(Entity e) {
 		
 	}
 	
+	/**
+	 * Remove the entity somehow.  Whether this is immediate or an animation plays first is up to the entity. 
+	 */
 	public void die() {
 		isDead = true;
 	}

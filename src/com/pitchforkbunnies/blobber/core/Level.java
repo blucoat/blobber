@@ -44,6 +44,9 @@ public abstract class Level {
 		entities.add(player);
 	}
 	
+	/**
+	 * Resets the level to its initial state
+	 */
 	public void reset() {
 		entities.clear();
 		lights.clear();
@@ -195,8 +198,18 @@ public abstract class Level {
 		return false;
 	}
 
+	/**
+	 * Activates a trigger at the given point, caused by a TriggerTile.
+	 * How the level reacts is defined in individual level classes
+	 * @param x the x-coordinate of the trigger
+	 * @param y the y-coordinate of the trigger
+	 */
 	public abstract void trigger(int x, int y);
 	
+	/**
+	 * Locks the camera to the player
+	 * @param g Graphics object to use for screen dimensions
+	 */
 	public void fixCamera(Graphics g) {
 		xo = player.x - 0.5f * Graphics.getWidth() / Tile.TILE_WIDTH_H;
 		yo = player.y - 0.5f * Graphics.getHeight() / Tile.TILE_WIDTH_H;
