@@ -8,11 +8,15 @@ public class EntityChargerEnemy extends Enemy {
 	private int chargeCooldown = 0, chargeToGo = 0;
 	boolean chargingLeft;
 	
+	private Sprite left, right;
+	
 	public EntityChargerEnemy(Level level) {
 		super(level);
 		width = 30.0f / 32;
 		height = 30.0f / 32;
-		sprite = new Sprite(level.bundle.textures.sprites, 32, 32, 30, 30, 1, 1);
+		left = new Sprite(level.bundle.textures.sprites, 32, 32, 30, 30, 1, 1);
+		right = new Sprite(level.bundle.textures.sprites, 64, 32, 30, 30, 1, 1);
+		sprite = left;
 		canFreeFall = false;
 	}
 	
@@ -29,6 +33,7 @@ public class EntityChargerEnemy extends Enemy {
 			chargeToGo = 10;
 			chargeCooldown = 200;
 			chargingLeft = level.player.x < x;
+			sprite = chargingLeft ? left : right;
 		}
 	}
 }
