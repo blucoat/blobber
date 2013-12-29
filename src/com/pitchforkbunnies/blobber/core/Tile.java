@@ -2,7 +2,11 @@ package com.pitchforkbunnies.blobber.core;
 
 import org.newdawn.slick.opengl.Texture;
 
-
+/**
+ * Class representing one tile in level-space
+ * @author James
+ *
+ */
 public class Tile {
 	public static final int TILE_WIDTH_P = 32;
 	public static final float TILE_WIDTH_H = Graphics.pixelsToUnits(TILE_WIDTH_P); 
@@ -12,6 +16,12 @@ public class Tile {
 	public boolean walkable;
 	public Sprite sprite;
 	
+	/**
+	 * Constructs a new tile at the given location in the level (does NOT update the level's tile array)
+	 * @param level
+	 * @param x
+	 * @param y
+	 */
 	public Tile(Level level, int x, int y) {
 		this.level = level;
 		this.x = x;
@@ -74,6 +84,10 @@ public class Tile {
 		return this;
 	}
 
+	/**
+	 * Method to be overridden by specific tiles, triggers when an entity walks on the tile 
+	 * @param e
+	 */
 	public void onWalk(Entity e) {
 	}
 }

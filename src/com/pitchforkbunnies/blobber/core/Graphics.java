@@ -19,7 +19,11 @@ import org.lwjgl.opengl.Display;
 import org.newdawn.slick.opengl.Texture;
 
 
-
+/**
+ * A really shitty attempt to control OpenGL with OOP
+ * @author James
+ *
+ */
 public class Graphics {
 	
 	private boolean lightingEnabled = false;
@@ -39,6 +43,9 @@ public class Graphics {
 		return (float) pixels / TARGET_HEIGHT;
 	}
 	
+	/**
+	 * Construct a new graphics handle
+	 */
 	public Graphics() {
 		initShaders();
 		initBuffers();
@@ -46,6 +53,10 @@ public class Graphics {
 		glEnable(GL_BLEND);
 	}
 	
+	/**
+	 * Sets the current lightmap to use, or turns off lighting if null.
+	 * @param map the LightMap object to use
+	 */
 	public void setLightmap(LightMap map) {
 		if(map == null) {
 			lightingEnabled = false;
@@ -136,6 +147,12 @@ public class Graphics {
 		ARBShaderObjects.glUniform1iARB(lightmapID, 1);
 	}
 	
+	/**
+	 * Loads the specified shader and returns the OpenGL pointer
+	 * @param ref the path to the shader, relative to the shader package
+	 * @param type GL_FRAGMENT_SHADER or GL_VERTEX_SHADER
+	 * @return the OpenGL pointer to the shader loaded
+	 */
 	public static int loadShader(String ref, int type) {
 		InputStream in = Graphics.class.getClassLoader().getResourceAsStream("com/pitchforkbunnies/blobber/shader/" + ref);
 		if(in == null)
@@ -158,6 +175,9 @@ public class Graphics {
 		return id;
 	}
 	
+	/**
+	 * Prepare the graphics context for rendering 
+	 */
 	public void begin() {
 		glUseProgram(lightingEnabled ? p1ID : p2ID);
 		
@@ -171,6 +191,9 @@ public class Graphics {
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 	
+	/**
+	 * Call after all rendering is done each frame
+	 */
 	public void end() {
 		glUseProgram(0);
 		
@@ -185,6 +208,10 @@ public class Graphics {
 		currentTexture = null;
 	}
 	
+	/**
+	 * Sets the texture to use in subsequent draw calls
+	 * @param tex The texture to bind
+	 */
 	public void bindTexture(Texture tex) {
 		if(currentTexture != tex) {
 			glActiveTexture(GL_TEXTURE0);
@@ -257,6 +284,9 @@ public class Graphics {
 		return (float) Display.getWidth() / Display.getHeight();
 	}
 	
+	/**
+	 * Call to free up memory after the game is over
+	 */
 	public void release() {
 		glUseProgram(0);
 		

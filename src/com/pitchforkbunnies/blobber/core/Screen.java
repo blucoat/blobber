@@ -1,6 +1,10 @@
 package com.pitchforkbunnies.blobber.core;
 
-
+/**
+ * Class representing one UI page the user can interact with
+ * @author James
+ *
+ */
 public abstract class Screen {
 	protected ResourceBundle bundle;
 	

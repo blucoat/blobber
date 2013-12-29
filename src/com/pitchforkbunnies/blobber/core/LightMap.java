@@ -11,11 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.Sys;
 import org.lwjgl.opengl.Display;
 
-
-
+/**
+ * Class that "manages" lighting logic
+ * @author James
+ *
+ */
 public class LightMap {
 	private List<Vertex> vertices = new ArrayList<Vertex>();
 	private List<Segment> segments = new ArrayList<Segment>();
@@ -30,6 +32,10 @@ public class LightMap {
 	private float ar = 0, ag = 0, ab = 0;
 	private float ax = 0, ay = 0, az = 1;
 	
+	/**
+	 * Constructs a new lightmap around the given level.
+	 * @param level The level to base the lighting on
+	 */
 	public LightMap(Level level) {
 		setLevel(level);
 		initFrameBuffer();
@@ -141,6 +147,10 @@ public class LightMap {
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 	
+	/**
+	 * Sets the lightmap to be based on the given level 
+	 * @param level The level to calculate light around
+	 */
 	public void setLevel(Level level) {
 		this.level = level;
 		
@@ -162,6 +172,13 @@ public class LightMap {
 		for(int i = 0; i < level.height; i++) {
 			addSegment(level.width, i, level.width, i + 1);
 		}
+	}
+	
+	/**
+	 * Update the lightmap after the terrain changes
+	 */
+	public void refresh() {
+		setLevel(level);
 	}
 	
 	private void addSegment(int x1, int y1, int x2, int y2) {
@@ -187,18 +204,34 @@ public class LightMap {
 		return v;
 	}
 	
+	/**
+	 * Sets the ambient light color
+	 * @param r
+	 * @param g
+	 * @param b
+	 */
 	public void setAmbientLight(float r, float g, float b) {
 		ar = r;
 		ag = g;
 		ab = b;
 	}
 	
+	/**
+	 * Sets the attenuation of light for subsequent calls to renderLight().
+	 * Uses the function f(d) = xd^2 + yd + c, where render color = original color / f(distance)
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
 	public void setAttenuation(float x, float y, float z) {
 		ax = x;
 		ay = y;
 		az = z;
 	}
 	
+	/**
+	 * Begins rendering to the lightmap
+	 */
 	public void begin() {
 		glBindFramebuffer(GL_FRAMEBUFFER, frameID);
 		glClearColor(ar, ag, ab, 1);
@@ -207,10 +240,20 @@ public class LightMap {
 		glBlendFunc(GL_ONE, GL_ONE);
 	}
 	
+	/**
+	 * Stops rendering to the lightmap
+	 */
 	public void end() {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 	
+	/**
+	 * Renders sunlight coming from the given angle (not done yet)
+	 * @param angle
+	 * @param r
+	 * @param g
+	 * @param b
+	 */
 	public void renderSun(float angle, float r, float g, float b) {
 		angle *= Math.PI / 180;
 		float nx = (float) Math.cos(angle);
@@ -418,6 +461,14 @@ public class LightMap {
 		glDisableVertexAttribArray(3);
 	}
 	
+	/**
+	 * Renders light coming from the given point at the given color
+	 * @param x
+	 * @param y
+	 * @param r
+	 * @param g
+	 * @param b
+	 */
 	public void renderLight(float x, float y, float r, float g, float b) {
 		//this is a really dumb hack, but it works... I think
 		x += 0.01;
@@ -611,10 +662,17 @@ public class LightMap {
 		glDisableVertexAttribArray(3);
 	}
 	
+	/**
+	 * Gets the texture containing the lightmap
+	 * @return the OpenGL pointer to the texture, NOT the actual framebuffer
+	 */
 	public int getFrameBuffer() {
 		return textureID;
 	}
 	
+	/**
+	 * Be free, my child
+	 */
 	public void release() {
 		glDeleteFramebuffers(frameID);
 		glDeleteTextures(textureID);

@@ -7,6 +7,11 @@ import org.lwjgl.openal.AL;
 import org.newdawn.slick.openal.Audio;
 import org.newdawn.slick.openal.AudioLoader;
 
+/**
+ * Holder for sound files
+ * @author James
+ *
+ */
 public class SoundBundle {
 	public Audio jump = loadSound("com/pitchforkbunnies/blobber/res/jump.wav", "WAV");
 	
@@ -21,6 +26,9 @@ public class SoundBundle {
 		}
 	}
 	
+	/**
+	 * Free up all teh sound files
+	 */
 	public void release() {
 		AL.destroy();
 	}
