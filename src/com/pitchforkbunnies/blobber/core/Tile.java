@@ -66,14 +66,14 @@ public class Tile {
 	}
 	
 	/**
-	 * Convenience method to set the walkable property
+	 * Sets the graphical representation of the tile
 	 * @param id The index of the first frame of the animation
 	 * @param frames The number of frames in the animation
 	 * @param period The period of the animation
 	 * @return pointer to the tile for convenience
 	 */
 	public Tile setSprite(int id, int frames, int period) {
-		Texture tex = level.bundle.textures.sprites;
+		Texture tex = level.bundle.textures.tiles;
 		int w = tex.getImageWidth() / TILE_WIDTH_P;
 		sprite = new Sprite(tex, 
 				TILE_WIDTH_P * (id % w), 

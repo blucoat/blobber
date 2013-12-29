@@ -10,8 +10,10 @@ import javax.imageio.ImageIO;
 
 import com.pitchforkbunnies.blobber.entity.EntityChargerEnemy;
 import com.pitchforkbunnies.blobber.entity.EntityPlayer;
+import com.pitchforkbunnies.blobber.tile.TileEmpty;
 import com.pitchforkbunnies.blobber.tile.TileSpike;
 import com.pitchforkbunnies.blobber.tile.TileTrigger;
+import com.pitchforkbunnies.blobber.tile.TileWall;
 
 public abstract class Level {
 	public ResourceBundle bundle;
@@ -82,17 +84,17 @@ public abstract class Level {
 	private Tile getTileFromColor(int color, int x, int y) {
 		color = color & 0xFFFFFF;
 		switch(color) {
-		case 0x000000: return new Tile(this, x, y).setWalkable(false).setSprite(4, 1, 1);
-		case 0xFFFFFF: return new Tile(this, x, y).setWalkable(true).setSprite(1, 1, 1);
+		case 0x000000: return new TileWall(this, x, y);
+		case 0xFFFFFF: return new TileEmpty(this, x, y);
 		case 0x0026FF:
 			spawnx = x;
 			spawny = y;
-			return new Tile(this, x, y).setWalkable(true).setSprite(1, 1, 1);
+			return new TileEmpty(this, x, y);
 		case 0xFF0000: return new TileTrigger(this, x, y);
 		case 0x00FF21: return new TileSpike(this, x, y);
 		case 0xFFFF00:
 			spawnEntity(new EntityChargerEnemy(this), x, y);
-			return new Tile(this, x, y).setWalkable(true).setSprite(1, 1, 1);
+			return new TileEmpty(this, x, y);
 			
 		default:
 			lights.add(new LightSource(
@@ -101,7 +103,7 @@ public abstract class Level {
 					((color >> 16) & 0xFF) / 256f, 
 					((color >> 8) & 0xFF) / 256f,
 					(color & 0xFF) / 256f));
-			return new Tile(this, x, y).setWalkable(true).setSprite(1, 1, 1);
+			return new TileEmpty(this, x, y);
 		}
 	}
 	
@@ -155,7 +157,7 @@ public abstract class Level {
 	 */
 	public void render(Graphics g) {
 		lightmap.setAttenuation(.2f, .5f, 1);
-		lightmap.setAmbientLight(.05f, .05f, .1f);
+		lightmap.setAmbientLight(.1f, .1f, .2f);
 		
 		int right = (int) Math.min(width - 1, xo + Graphics.getWidth() / Tile.TILE_WIDTH_H);
 		int left = (int) Math.min(height - 1, yo + Graphics.getHeight() / Tile.TILE_WIDTH_H);

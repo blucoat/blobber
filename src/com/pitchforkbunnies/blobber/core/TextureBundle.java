@@ -24,6 +24,7 @@ public class TextureBundle {
 	public Texture test = loadTexture("test.png");
 	public Texture numbers = loadTexture("numbers.png");
 	public Texture sprites = loadTexture("sprites.png");
+	public Texture tiles = loadTexture("tiles.png");
 	
 	private Texture loadTexture(String ref) {
 		InputStream in = TextureBundle.class.getClassLoader().getResourceAsStream("com/pitchforkbunnies/blobber/res/" + ref);
