@@ -15,9 +15,9 @@ public class EntityPlayer extends Entity {
 	
 	public EntityPlayer(Level level) {
 		super(level);
-		width = 31.0f / 32;
-		height = 29.0f / 32;
-		sprite = new Sprite(level.bundle.textures.sprites, 0, 65, 31, 31, 4, 15	);
+		width = 28.0f / 32;
+		height = 26.0f / 32;
+		sprite = new Sprite(level.bundle.textures.sprites, 0, 0, 28, 26, 4, 15);
 		canWallJump = true;
 	}
 	

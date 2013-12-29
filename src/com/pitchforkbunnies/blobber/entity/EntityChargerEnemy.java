@@ -12,10 +12,10 @@ public class EntityChargerEnemy extends Enemy {
 	
 	public EntityChargerEnemy(Level level) {
 		super(level);
-		width = 30.0f / 32;
-		height = 30.0f / 32;
-		left = new Sprite(level.bundle.textures.sprites, 32, 32, 30, 30, 1, 1);
-		right = new Sprite(level.bundle.textures.sprites, 64, 32, 30, 30, 1, 1);
+		width = 28.0f / 32;
+		height = 26.0f / 32;
+		left = new Sprite(level.bundle.textures.sprites, 0, 26, 28, 26, 1, 1);
+		right = new Sprite(level.bundle.textures.sprites, 28, 26, 28, 26, 1, 1);
 		sprite = left;
 		canFreeFall = false;
 	}
