@@ -6,7 +6,7 @@ import com.pitchforkbunnies.blobber.core.ResourceBundle;
 
 public class Level1Test extends Level {
 	public Level1Test(ResourceBundle bundle) {
-		super("com/pitchforkbunnies/blobber/res/level5.png", bundle);
+		super("com/pitchforkbunnies/blobber/res/level6.png", bundle);
 		
 	}
 	
