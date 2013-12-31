@@ -32,7 +32,7 @@ public class Graphics {
 	private Texture currentTexture = null;
 	private FloatBuffer buffer = BufferUtils.createFloatBuffer(24);
 	
-	private static final int TARGET_HEIGHT = 300; 
+	public static final int TARGET_HEIGHT = 30; 
 	
 	/**
 	 * Converts from pixels to screen units
@@ -236,10 +236,18 @@ public class Graphics {
 			return;
 		}
 		
-		float x1 = (dx - 0.5f * w / TARGET_HEIGHT) * 2 / Graphics.getWidth() - 1;
-		float y1 = (dy + 0.5f * h / TARGET_HEIGHT) * -2 / Graphics.getHeight() + 1;
-		float x2 = (dx + 0.5f * w / TARGET_HEIGHT) * 2 / Graphics.getWidth() - 1;
-		float y2 = (dy - 0.5f * h / TARGET_HEIGHT) * -2 / Graphics.getHeight() + 1;
+		int ix = Math.round(dx * TARGET_HEIGHT - w * 0.5f);
+		int iy = Math.round(dy * TARGET_HEIGHT - h * 0.5f);
+		
+		float x1 = (float) ix / (TARGET_HEIGHT * getWidth()) * 2 - 1;
+		float y2 = (float) iy / (TARGET_HEIGHT) * -2 + 1;
+		float x2 = (float) (ix + w) / (TARGET_HEIGHT * getWidth()) * 2 - 1;
+		float y1 = (float) (iy + h) / (TARGET_HEIGHT) * -2 + 1;
+		
+		//float x1 = (dx - 0.5f * w / TARGET_HEIGHT) * 2 / Graphics.getWidth() - 1;
+		//float y1 = (dy + 0.5f * h / TARGET_HEIGHT) * -2 / Graphics.getHeight() + 1;
+		//float x2 = (dx + 0.5f * w / TARGET_HEIGHT) * 2 / Graphics.getWidth() - 1;
+		//float y2 = (dy - 0.5f * h / TARGET_HEIGHT) * -2 / Graphics.getHeight() + 1;
 		
 		float sx1 = (float) sx / currentTexture.getTextureWidth();
 		float sy1 = (float) (sy + h) / currentTexture.getTextureHeight();
