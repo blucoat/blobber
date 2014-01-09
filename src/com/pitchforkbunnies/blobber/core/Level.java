@@ -10,6 +10,7 @@ import javax.imageio.ImageIO;
 
 import com.pitchforkbunnies.blobber.entity.EntityChargerEnemy;
 import com.pitchforkbunnies.blobber.entity.EntityPlayer;
+import com.pitchforkbunnies.blobber.tile.TileDoor;
 import com.pitchforkbunnies.blobber.tile.TileEmpty;
 import com.pitchforkbunnies.blobber.tile.TileSpike;
 import com.pitchforkbunnies.blobber.tile.TileTrigger;
@@ -86,16 +87,21 @@ public abstract class Level {
 		switch(color) {
 		case 0x000000: return new TileWall(this, x, y);
 		case 0xFFFFFF: return new TileEmpty(this, x, y);
+		
 		case 0x0026FF:
 			spawnx = x;
 			spawny = y;
 			return new TileEmpty(this, x, y);
+			
 		case 0xFF0000: return new TileTrigger(this, x, y);
 		case 0x00FF21: return new TileSpike(this, x, y);
+		
 		case 0xFFFF00:
 			spawnEntity(new EntityChargerEnemy(this), x, y);
 			return new TileEmpty(this, x, y);
 			
+		case 0xBB6F0D: return new TileDoor(this, x, y);
+		
 		default:
 			lights.add(new LightSource(
 					x + .5f, 
@@ -221,5 +227,15 @@ public abstract class Level {
 			xo = width - Graphics.getWidth() / Tile.TILE_WIDTH_H;
 		if(yo > height - Graphics.getHeight() / Tile.TILE_WIDTH_H) 
 			yo = height - Graphics.getHeight() / Tile.TILE_WIDTH_H;
+	}
+	
+	/**
+	 * Convenience method for using coordinates in switch case statements
+	 * @param x 
+	 * @param y
+	 * @return id corresponding to y * width + x 
+	 */
+	public int indexAt(int x, int y) {
+		return y * width + x;
 	}
 }

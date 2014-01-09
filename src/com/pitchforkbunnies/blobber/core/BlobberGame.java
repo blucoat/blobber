@@ -28,9 +28,7 @@ public class BlobberGame {
 	
 	private void init() {
 		try {
-			ContextAttribs attribs = new ContextAttribs(3, 2)
-				.withProfileCore(true)
-				.withForwardCompatible(true);
+			ContextAttribs attribs = new ContextAttribs(3, 0);
 			
 			Display.setDisplayMode(new DisplayMode(800, 600));
 			Display.setVSyncEnabled(VSYNC_IN_WINDOWED);
