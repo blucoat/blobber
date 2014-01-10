@@ -1,4 +1,4 @@
-#version 150
+#version 130
 
 in vec4 in_Position;
 in vec2 in_Displacement;

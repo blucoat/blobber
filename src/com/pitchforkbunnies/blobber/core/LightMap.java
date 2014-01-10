@@ -43,6 +43,13 @@ public class LightMap {
 		initBuffers();
 	}
 	
+	public void rebuild() {
+		release();
+		initFrameBuffer();
+		initShaders();
+		initBuffers();
+	}
+	
 	private void initFrameBuffer() {
 		frameID = glGenFramebuffers();
 		glBindFramebuffer(GL_FRAMEBUFFER, frameID);

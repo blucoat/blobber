@@ -28,11 +28,11 @@ public class Graphics {
 	
 	private boolean lightingEnabled = false;
 	
-	private int vaoID, vboID, indexID, p1ID, p2ID, vsID, fs1ID, fs2ID, textureID, lightmapID;
+	private int vaoID, vboID, indexID, p1ID, p2ID, vsID, fs1ID, fs2ID, textureID, lightmapID, resolutionID;
 	private Texture currentTexture = null;
 	private FloatBuffer buffer = BufferUtils.createFloatBuffer(24);
 	
-	public static final int TARGET_HEIGHT = 30; 
+	public static final int TARGET_HEIGHT = 300; 
 	
 	/**
 	 * Converts from pixels to screen units
@@ -140,6 +140,8 @@ public class Graphics {
 		glLinkProgram(p2ID);
 		glValidateProgram(p2ID);
 		
+		resolutionID = glGetUniformLocation(p1ID, "resolution");
+		
 		ARBShaderObjects.glUseProgramObjectARB(p1ID);
 		textureID = ARBShaderObjects.glGetUniformLocationARB(p1ID, "texture_diffuse");
 		ARBShaderObjects.glUniform1iARB(textureID, 0);
@@ -184,6 +186,8 @@ public class Graphics {
 		glBindVertexArray(vaoID);
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
+		
+		glUniform2f(resolutionID, Display.getWidth(), Display.getHeight());
 		
 		glBindBuffer(GL_ARRAY_BUFFER, vboID);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexID);

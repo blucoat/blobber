@@ -1,5 +1,7 @@
 package com.pitchforkbunnies.blobber.ui;
 
+import org.lwjgl.opengl.Display;
+
 import com.pitchforkbunnies.blobber.core.Graphics;
 import com.pitchforkbunnies.blobber.core.Level;
 import com.pitchforkbunnies.blobber.core.LightMap;
@@ -35,6 +37,11 @@ public class GameScreen extends Screen {
 
 	@Override
 	public void renderLight(Graphics g) {
+		if(Display.wasResized()) {
+			lightmap.rebuild();
+		}
+		
+		
 		//Do this before any rendering
 		level.fixCamera(g);
 		
