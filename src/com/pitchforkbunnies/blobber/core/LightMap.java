@@ -569,8 +569,10 @@ public class LightMap {
 		
 		glUseProgram(pID);
 		glBindVertexArray(vaoID);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, wallIndexID);
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
+		glBindBuffer(GL_ARRAY_BUFFER, vboID);
 		
 		glUniform3f(colorID, r, g, b);
 		glUniform3f(attenuationID, ax, ay, az);
@@ -598,12 +600,12 @@ public class LightMap {
 			buffer.put(values);
 			buffer.flip();
 			
-			glBindBuffer(GL_ARRAY_BUFFER, vboID);
+			//glBindBuffer(GL_ARRAY_BUFFER, vboID);
 			glBufferSubData(GL_ARRAY_BUFFER, 0, buffer);
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			//glBindBuffer(GL_ARRAY_BUFFER, 0);
 			
-			glBindVertexArray(vaoID);
-			glDrawArrays(GL_TRIANGLES, 0, 3);
+			//glBindVertexArray(vaoID);
+			glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, 0);
 		}
 		
 		glDisableVertexAttribArray(0);
@@ -615,11 +617,12 @@ public class LightMap {
 		glUniform3f(wallAttenuationID, ax, ay, az);
 		
 		glBindVertexArray(wallvaoID);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, wallIndexID);
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
 		glEnableVertexAttribArray(2);
 		glEnableVertexAttribArray(3);
+		
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, wallIndexID);
 		
 		for(int i = 0; i < points.size(); i += 4) {
 			float x2 = points.get(i).floatValue();

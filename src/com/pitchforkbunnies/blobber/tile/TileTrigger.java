@@ -9,7 +9,7 @@ public class TileTrigger extends Tile {
 	public TileTrigger(Level level, int x, int y) {
 		super(level, x, y);
 		setWalkable(true);
-		setSprite(1, 1, 1);
+		setSprite(3, 1, 1);
 	}
 	
 	@Override
