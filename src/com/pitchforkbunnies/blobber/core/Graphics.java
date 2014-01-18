@@ -32,7 +32,7 @@ public class Graphics {
 	private Texture currentTexture = null;
 	private FloatBuffer buffer = BufferUtils.createFloatBuffer(24);
 	
-	public static final int TARGET_HEIGHT = 30; 
+	public static final int TARGET_HEIGHT = 300; 
 	
 	/**
 	 * Converts from pixels to screen units

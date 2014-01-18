@@ -3,12 +3,12 @@ package com.pitchforkbunnies.blobber.entity;
 import com.pitchforkbunnies.blobber.core.Entity;
 import com.pitchforkbunnies.blobber.core.Level;
 
-public class Enemy extends Entity {
+public class EntityEnemy extends EntityLiving {
 	
 	public boolean playerWithinRange = false;
 	public float range = 30.0f;
 	
-	public Enemy(Level level) {
+	public EntityEnemy(Level level) {
 		super(level);
 	}
 	

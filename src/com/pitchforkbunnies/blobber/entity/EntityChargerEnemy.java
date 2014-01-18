@@ -3,7 +3,7 @@ package com.pitchforkbunnies.blobber.entity;
 import com.pitchforkbunnies.blobber.core.Level;
 import com.pitchforkbunnies.blobber.core.Sprite;
 
-public class EntityChargerEnemy extends Enemy {
+public class EntityChargerEnemy extends EntityEnemy {
 
 	private int chargeCooldown = 0, chargeToGo = 0;
 	boolean chargingLeft;
