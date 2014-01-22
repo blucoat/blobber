@@ -26,7 +26,6 @@ public class Level1Test extends Level {
 
 	@Override
 	public void render(Graphics g){
-		lightmap.setAttenuation(2f, .5f, 1);
 		super.render(g);
 		
 	}

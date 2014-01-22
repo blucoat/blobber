@@ -4,16 +4,12 @@ import org.lwjgl.opengl.Display;
 
 import com.pitchforkbunnies.blobber.core.Graphics;
 import com.pitchforkbunnies.blobber.core.Level;
-import com.pitchforkbunnies.blobber.core.LightMap;
-import com.pitchforkbunnies.blobber.core.LightSource;
 import com.pitchforkbunnies.blobber.core.ResourceBundle;
 import com.pitchforkbunnies.blobber.core.Screen;
 
 public class GameScreen extends Screen {
 
 	private Level level;
-	private LightMap lightmap;
-	private int t = 0;
 	
 	public GameScreen(Level level, ResourceBundle bundle) {
 		super(bundle);
@@ -21,8 +17,6 @@ public class GameScreen extends Screen {
 	}
 	
 	public void loadLevel(Level newLevel) {
-		lightmap = new LightMap(newLevel);
-		newLevel.lightmap = lightmap;
 		level = newLevel;
 	}
 	
@@ -38,24 +32,14 @@ public class GameScreen extends Screen {
 	@Override
 	public void renderLight(Graphics g) {
 		if(Display.wasResized()) {
-			lightmap.rebuild();
+			level.lightmap.rebuild();
 		}
-		
 		
 		//Do this before any rendering
 		level.fixCamera(g);
 		
-		if(++t == 180)
-			t = 1;
-		
-		lightmap.begin();
-		//lightmap.renderSun(60, 1, .5f, 0);
-		for(LightSource ls : level.lights) {
-			lightmap.renderLight(ls.x, ls.y, ls.r, ls.g, ls.b);
-		}
-		lightmap.end();
-		
-		g.setLightmap(lightmap);
+		level.lightmap.render();
+		g.setLightmap(level.lightmap);
 	}
 	
 	@Override

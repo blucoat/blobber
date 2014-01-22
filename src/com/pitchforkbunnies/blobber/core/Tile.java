@@ -15,6 +15,7 @@ public class Tile {
 	public Level level;
 	public boolean walkable;
 	public Sprite sprite;
+	public float opacity = 0.02f;
 	
 	/**
 	 * Constructs a new tile at the given location in the level (does NOT update the level's tile array)

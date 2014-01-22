@@ -21,11 +21,11 @@ public abstract class Level {
 	public int width, height, spawnx, spawny;
 	public Tile[][] tiles;
 	public List<Entity> entities = new ArrayList<Entity>();
-	public List<LightSource> lights = new ArrayList<LightSource>();
 	public float gravity = 0.01f;
 	public EntityPlayer player;
-	public LightMap lightmap;
 	public Level next = null;
+	
+	public LightMap lightmap;
 	
 	private String ref;
 	
@@ -41,6 +41,10 @@ public abstract class Level {
 		this.bundle = bundle;
 		loadLevel(ref);
 		
+		lightmap = new LightMap(this);
+		
+		lightmap.lightTile(10, 100, 1, 1, 1);
+		
 		player = new EntityPlayer(this);
 		player.x = spawnx;
 		player.y = spawny;
@@ -52,7 +56,7 @@ public abstract class Level {
 	 */
 	public void reset() {
 		entities.clear();
-		lights.clear();
+		lightmap.setLevel(this);
 		
 		loadLevel(ref);
 		
@@ -103,13 +107,10 @@ public abstract class Level {
 		case 0xBB6F0D: return new TileDoor(this, x, y);
 		
 		default:
-			lights.add(new LightSource(
-					x + .5f, 
-					y + .5f, 
-					((color >> 16) & 0xFF) / 256f, 
-					((color >> 8) & 0xFF) / 256f,
-					(color & 0xFF) / 256f));
+			
+			
 			return new TileEmpty(this, x, y);
+			
 		}
 	}
 	
@@ -162,9 +163,6 @@ public abstract class Level {
 	 * @param g The graphics handle to use
 	 */
 	public void render(Graphics g) {
-		lightmap.setAttenuation(.2f, .5f, 1);
-		lightmap.setAmbientLight(.1f, .1f, .2f);
-		
 		int right = (int) Math.min(width - 1, xo + Graphics.getWidth() / Tile.TILE_WIDTH_H);
 		int left = (int) Math.min(height - 1, yo + Graphics.getHeight() / Tile.TILE_WIDTH_H);
 		
