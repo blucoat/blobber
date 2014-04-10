@@ -1,0 +1,49 @@
+Project TODO
+
+-------General--------
+* Decide how lighting is coupled to in-game objects, or if lights should exist
+  on a separate "layer"
+* Create a timeline from now to release
+* Decide roughly how many levels and what other features not listed here must be
+added
+
+---------Code---------
+LIGHTING
+* Clean up the lighting/rendering structure.  This will mostly require sitting
+  down and thinking hard about /good/ program design (this is a priority)
+* Implement dynamically loading lights from the level
+* Give entities the ability to emit light (such as individual goo particles)
+
+NEW FEATURES
+* Add goo that sticks to walls (and emits light)
+* Add support for background music for each level
+* Add map screen that tracks where the player has explored
+* Add support for level colour themes ?
+* Add item inventory / goo stockpile
+* Add save/load system for game progress
+* Add options menu
+
+---------Art----------
+* Add individual walking/jumping animations for the sprites currently in the
+  game
+* Draw new tiles, items, and enemies as we think of them
+* Design a logo (this requires that we think of a title first)
+* Draw UI elements (generic buttons, checkboxes, popups)
+* Either find a font that suits our game or make one
+
+--------Audio---------
+* Create background music for levels and menus
+* Create sound effects for jumping, dying, enemies dashing
+* Create sound effects for UI actions (clicking/hovering over buttons)
+
+--------Levels--------
+* Plan general areas and level themes
+* Create a starting hub-world
+* Create a level editor maybe
+
+     Not actually 
+-----  going to  -----
+        happen
+* Port everything to SDL and stick it to Oracle
+* Rewrite all the bad code in the game
+* Write some code now that there's nothing left
